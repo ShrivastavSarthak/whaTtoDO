@@ -5,7 +5,7 @@ import { TaskModule } from './child/task/task.module';
 import { pUserModule } from './parent/user/puser.module';
 import { AdminModule } from './admin/user/Auser.module';
 import { AdminTaskModule } from './admin/task/Atask.module';
-
+import { pTaskModule } from './parent/task/Ptask.module';
 
 @Module({
   imports: [
@@ -16,7 +16,8 @@ import { AdminTaskModule } from './admin/task/Atask.module';
     TaskModule,
     pUserModule,
     AdminModule,
-    AdminTaskModule
+    AdminTaskModule,
+    pTaskModule,
   ],
   controllers: [],
   providers: [],

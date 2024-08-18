@@ -1,6 +1,10 @@
 import { IsString } from 'class-validator';
 
 export class CreateTaskDto {
+
+  // @IsString()
+  // childId: string;
+  
   @IsString()
   created_by: string;
 
