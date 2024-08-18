@@ -118,6 +118,7 @@ export class AdminTaskService {
       }
 
       const checkRelation = await this.patentUserModel.findOne({
+        _id: removeParentChildRelationDto.parentId,
         children: { $in: [removeParentChildRelationDto.childId] },
       });
 
