@@ -12,3 +12,13 @@ export class RemoveParentChildRelationDto {
   @IsString()
   childId: string;
 }
+
+export class ReadChildTaskByIdDto {
+  @IsString()
+  id: string;
+}
+
+export class DeleteTaskByIdDto {
+  @IsString()
+  id: string;
+}

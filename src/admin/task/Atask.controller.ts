@@ -1,7 +1,11 @@
-import { Body, Controller, Get, Param, Patch, UseGuards } from '@nestjs/common';
+import { Body, Controller, Get, Param, Patch, Post, UseGuards } from '@nestjs/common';
 import { AdminTaskService } from './Atask.service';
 import { AuthGuard } from 'src/auth/auth.gurd';
-import { RemoveParentChildRelationDto } from './dto/Atask.dto';
+import {
+  DeleteTaskByIdDto,
+  ReadChildTaskByIdDto,
+  RemoveParentChildRelationDto,
+} from './dto/Atask.dto';
 
 @UseGuards(AuthGuard)
 @Controller('admin-task')
@@ -35,8 +39,18 @@ export class adminTaskController {
   @UseGuards(AuthGuard)
   @Patch('/remove-relation')
   removeRelation(@Body() removeRelation: RemoveParentChildRelationDto) {
-    return this.adminTaskService.removeParentChildRelation(removeRelation)
+    return this.adminTaskService.removeParentChildRelation(removeRelation);
   }
 
+  @UseGuards(AuthGuard)
+  @Post('/read-child-task')
+  readTaskById(@Body() readChildTaskByIdDto: ReadChildTaskByIdDto) {
+    return this.adminTaskService.readChildData(readChildTaskByIdDto);
+  }
 
+  @UseGuards(AuthGuard)
+  @Post('/delete-child-task')
+  deleteTask(@Body() deleteTaskByIdDto: DeleteTaskByIdDto) {
+    return this.adminTaskService.deleteTaskById(deleteTaskByIdDto);
+  }
 }

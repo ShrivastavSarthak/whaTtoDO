@@ -3,13 +3,20 @@ import { InjectModel } from '@nestjs/mongoose';
 import { Model } from 'mongoose';
 import { User } from 'src/Schemas/cSchema/user.schema';
 import { pUser } from 'src/Schemas/pSchema/pUser.schema';
-import { FetchByIdDto, RemoveParentChildRelationDto } from './dto/Atask.dto';
+import {
+  DeleteTaskByIdDto,
+  FetchByIdDto,
+  ReadChildTaskByIdDto,
+  RemoveParentChildRelationDto,
+} from './dto/Atask.dto';
+import { Task } from 'src/Schemas/cSchema/task.schema';
 
 @Injectable()
 export class AdminTaskService {
   constructor(
     @InjectModel(pUser.name) private patentUserModel: Model<pUser>,
     @InjectModel(User.name) private childUserModel: Model<User>,
+    @InjectModel(Task.name) private TaskModel: Model<Task>,
   ) {}
 
   async getAllParent(): Promise<{
@@ -139,6 +146,47 @@ export class AdminTaskService {
 
       return {
         message: 'Relation removed successfully',
+        status: 200,
+      };
+    } catch (error) {
+      throw new Error(error);
+    }
+  }
+
+  async readChildData(readChildTaskByIdDto: ReadChildTaskByIdDto) {
+    try {
+      const fetchData = await this.TaskModel.find({
+        created_by: readChildTaskByIdDto.id,
+      });
+
+      if (!fetchData) {
+        return {
+          message: 'Task not found',
+          status: 200,
+        };
+      }
+      return {
+        message: 'Task fetch successfully',
+        data: fetchData,
+        status: 200,
+      };
+    } catch (error) {
+      throw new Error(error);
+    }
+  }
+
+  async deleteTaskById(deleteTaskByIdDto: DeleteTaskByIdDto) {
+    try {
+      const deleteTask = await this.TaskModel.findByIdAndDelete(
+        deleteTaskByIdDto.id,
+      );
+
+      if (!deleteTask) {
+        throw new Error('Task not found');
+      }
+
+      return {
+        message: 'Task deleted successfully',
         status: 200,
       };
     } catch (error) {
