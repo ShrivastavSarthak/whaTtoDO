@@ -5,6 +5,7 @@ import { User, UserSchema } from 'src/Schemas/cSchema/user.schema';
 import { pUser, pUserSchema } from 'src/Schemas/pSchema/pUser.schema';
 import { adminTaskController } from './Atask.controller';
 import { AdminTaskService } from './Atask.service';
+import { Task, TaskSchema } from 'src/Schemas/cSchema/task.schema';
 
 @Module({
   imports: [
@@ -16,6 +17,10 @@ import { AdminTaskService } from './Atask.service';
       {
         name: pUser.name,
         schema: pUserSchema,
+      },
+      {
+        name: Task.name,
+        schema: TaskSchema,
       },
     ]),
     JwtModule.register({
