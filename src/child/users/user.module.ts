@@ -18,6 +18,7 @@ import { JwtModule } from '@nestjs/jwt';
       secret: 'IamSecret',
       signOptions: { expiresIn: '59m' },
     }),
+    
   ],
   providers: [UserService],
   controllers: [UserController],

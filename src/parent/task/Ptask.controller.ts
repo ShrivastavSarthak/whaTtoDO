@@ -5,13 +5,16 @@ import {
   Post,
   Body,
   UseGuards,
+  Patch,
+  Param,
+  Get,
+  Delete,
 } from '@nestjs/common';
 
 import { pTaskUserService } from './Ptask.service';
 import {
   CreateParentTaskDto,
   DeleteParentTaskDto,
-  ReadParentTaskDto,
   UpdateParentTaskDto,
 } from './dtos/Ptask.dto';
 import { AuthGuard } from 'src/auth/auth.gurd';
@@ -28,21 +31,23 @@ export class pTaskController {
   }
 
   @UseGuards(AuthGuard)
-  @Post('/read-Task-by-parent')
+  @Get('/read-Task-by-parent/pid=:pId/cid=:cId')
   @UsePipes(new ValidationPipe())
-  readTaskByParent(@Body() readTaskByParent: ReadParentTaskDto) {
+  readTaskByParent(@Param('pId') pId: string, @Param('cId') cId: string) {
+    console.log(pId, cId);
+    const readTaskByParent = { pId, cId };
     return this.pTaskService.readTaskByParent(readTaskByParent);
   }
 
   @UseGuards(AuthGuard)
-  @Post('/delete-Task-by-parent')
+  @Delete('/delete-Task-by-parent')
   @UsePipes(new ValidationPipe())
   deleteTaskByParent(@Body() deleteTaskByParent: DeleteParentTaskDto) {
     return this.pTaskService.deleteTaskByParent(deleteTaskByParent);
   }
 
   @UseGuards(AuthGuard)
-  @Post('/update-Task-by-parent')
+  @Patch('/update-Task-by-parent')
   @UsePipes(new ValidationPipe())
   updateTaskByParent(@Body() updateTaskByParent: UpdateParentTaskDto) {
     return this.pTaskService.updateTaskByParent(updateTaskByParent);

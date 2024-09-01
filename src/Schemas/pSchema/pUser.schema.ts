@@ -8,6 +8,9 @@ export class pUser {
   @Prop({ unique: false, required: true })
   name: string;
 
+  @Prop({required:true,default:false})
+  verified: boolean
+
   @Prop({ unique: true, required: true })
   userName: string;
 

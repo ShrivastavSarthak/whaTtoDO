@@ -6,6 +6,8 @@ import { pUser } from 'src/Schemas/pSchema/pUser.schema';
 import { AddChild, CreatePatentDto, LoginUserDto } from './dto/Puser.dto';
 import { User } from 'src/Schemas/cSchema/user.schema';
 import bcrypt from 'bcryptjs';
+import { EmailService } from 'src/utils/email';
+import { EmailOptions } from 'src/type';
 
 @Injectable()
 export class pUserService {
@@ -13,6 +15,7 @@ export class pUserService {
     @InjectModel(pUser.name) private pUserModel: Model<pUser>,
     @InjectModel(User.name) private userModel: Model<User>,
     private jwtService: JwtService,
+    private emailService: EmailService,
   ) {}
 
   async signupParent(createParentDto: CreatePatentDto) {
@@ -29,6 +32,15 @@ export class pUserService {
         gender: createParentDto.gender,
         occupation: createParentDto.occupation,
       });
+
+      if (newParent) {
+        const mailOptions: EmailOptions = {
+          to: newParent.email,
+          subject: 'One step away!!',
+          body: 'Hey!! click on the below link to verify your email',
+        };
+        this.emailService.sendMail(mailOptions);
+      }
 
       return {
         message: 'parent created successfully',
@@ -92,7 +104,6 @@ export class pUserService {
       }
 
       const checkChildExist = await this.pUserModel.findOne({
-        
         children: { $in: [findChild._id] },
       });
 
