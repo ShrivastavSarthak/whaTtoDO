@@ -5,3 +5,10 @@ export interface UserInterface {
   phoneNo: number;
   password: string;
 }
+
+
+export interface EmailOptions{
+  to:string;
+  subject: string;
+  body: string
+}

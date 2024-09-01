@@ -6,6 +6,7 @@ import { pUserModule } from './parent/user/puser.module';
 import { AdminModule } from './admin/user/Auser.module';
 import { AdminTaskModule } from './admin/task/Atask.module';
 import { pTaskModule } from './parent/task/Ptask.module';
+import { ConfigModule } from '@nestjs/config';
 
 @Module({
   imports: [
@@ -18,6 +19,10 @@ import { pTaskModule } from './parent/task/Ptask.module';
     AdminModule,
     AdminTaskModule,
     pTaskModule,
+    ConfigModule.forRoot({
+      envFilePath: '.env',
+      isGlobal: true,
+    }),
   ],
   controllers: [],
   providers: [],

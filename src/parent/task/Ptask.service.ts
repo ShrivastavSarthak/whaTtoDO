@@ -2,8 +2,8 @@ import { Injectable } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
 import { Model } from 'mongoose';
 import { Task } from 'src/Schemas/cSchema/task.schema';
-import { User } from 'src/Schemas/cSchema/user.schema';
-import { pUser } from 'src/Schemas/pSchema/pUser.schema';
+// import { User } from 'src/Schemas/cSchema/user.schema';
+// import { pUser } from 'src/Schemas/pSchema/pUser.schema';
 import {
   CreateParentTaskDto,
   DeleteParentTaskDto,
@@ -15,8 +15,8 @@ import {
 export class pTaskUserService {
   constructor(
     @InjectModel(Task.name) private taskModel: Model<Task>,
-    @InjectModel(User.name) private uTaskModel: Model<User>,
-    @InjectModel(pUser.name) private pTaskModel: Model<pUser>,
+    // @InjectModel(User.name) private uTaskModel: Model<User>,
+    // @InjectModel(pUser.name) private pTaskModel: Model<pUser>,
   ) {}
 
   async createTaskByParent(createTaskByParentDto: CreateParentTaskDto) {
