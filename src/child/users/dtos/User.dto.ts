@@ -1,23 +1,51 @@
-import { IsNumber, IsString } from 'class-validator';
+import { ApiProperty } from '@nestjs/swagger';
+
 
 export class CreateUsrDto {
-  @IsString()
+  @ApiProperty({
+    type: String,
+    description: 'This is important',
+  })
   userName: string;
 
-  @IsString()
+  @ApiProperty({
+    type: String,
+    description: 'This is important',
+  })
   email: string;
 
-  @IsNumber()
+  @ApiProperty({
+    type: Number,
+    description: 'This is important',
+  })
   phoneNo: number;
 
-  @IsString()
+  @ApiProperty({
+    type: String,
+    description: 'This is important',
+  })
   password: string;
 }
 
 export class LoginUserDto {
-  @IsString()
+  @ApiProperty({
+    type: String,
+    description: 'This is important',
+  })
   userNameOrEmail: string;
 
-  @IsString()
+  @ApiProperty({
+    type: String,
+    description: 'This is important',
+  })
   password: string;
+}
+
+export class VerifyUser{
+  @ApiProperty({
+      type: String,
+      description: 'This is important',
+    })
+    id:string
+
 }

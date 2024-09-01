@@ -1,45 +1,81 @@
-import { IsString } from 'class-validator';
+import { ApiProperty } from '@nestjs/swagger';
+
 
 export class CreateParentTaskDto {
-  @IsString()
+  @ApiProperty({
+    type: String,
+    description: 'This is important',
+  })
   pId: string;
 
-  @IsString()
+  @ApiProperty({
+    type: String,
+    description: 'This is important',
+  })
   cId: string;
 
-  @IsString()
+  @ApiProperty({
+    type: String,
+    description: 'This is important',
+  })
   task: string;
 }
 
 export class ReadParentTaskDto {
-  @IsString()
+  @ApiProperty({
+    type: String,
+    description: 'This is important',
+  })
   pId: string;
 
-  @IsString()
+  @ApiProperty({
+    type: String,
+    description: 'This is important',
+  })
   cId: string;
 }
 
 export class UpdateParentTaskDto {
-  @IsString()
+  @ApiProperty({
+    type: String,
+    description: 'This is important',
+  })
   pId: string;
 
-  @IsString()
+  @ApiProperty({
+    type: String,
+    description: 'This is important',
+  })
   cId: string;
 
-  @IsString()
+  @ApiProperty({
+    type: String,
+    description: 'This is important',
+  })
   taskId: string;
 
-  @IsString()
+  @ApiProperty({
+    type: String,
+    description: 'This is important',
+  })
   taskName: string;
-  
 }
 export class DeleteParentTaskDto {
-  @IsString()
+  @ApiProperty({
+    type: String,
+    description: 'This is important',
+  })
   pId: string;
 
-  @IsString()
+  @ApiProperty({
+    type: String,
+    description: 'This is important',
+  })
   cId: string;
 
-  @IsString()
+  @ApiProperty({
+    type: String,
+    description: 'This is important',
+  })
   taskId: string;
 }

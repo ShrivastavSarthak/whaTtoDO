@@ -6,7 +6,9 @@ import {
   ReadChildTaskByIdDto,
   RemoveParentChildRelationDto,
 } from './dto/Atask.dto';
+import { ApiTags } from '@nestjs/swagger';
 
+@ApiTags("admin-task")
 @UseGuards(AuthGuard)
 @Controller('admin-task')
 export class adminTaskController {

@@ -10,6 +10,4 @@ export enum gender {
 export enum occupation{
     GOVERNMENT_EMPLOYEE = 'Government employee',
     PRIVATE_EMPLOYEE = 'Private employee',
-    UNEMPLOYED = 'Unemployed',
-    BUSINESS_MAN = 'Business man',
 } 

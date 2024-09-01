@@ -1,24 +1,39 @@
-import { IsString } from 'class-validator';
+import { ApiProperty } from '@nestjs/swagger';
 
 export class FetchByIdDto {
-  @IsString()
+  @ApiProperty({
+    type: String,
+    description: 'This is important',
+  })
   id: string;
 }
 
 export class RemoveParentChildRelationDto {
-  @IsString()
+  @ApiProperty({
+    type: String,
+    description: 'This is important',
+  })
   parentId: string;
 
-  @IsString()
+  @ApiProperty({
+    type: String,
+    description: 'This is important',
+  })
   childId: string;
 }
 
 export class ReadChildTaskByIdDto {
-  @IsString()
+  @ApiProperty({
+    type: String,
+    description: 'This is important',
+  })
   id: string;
 }
 
 export class DeleteTaskByIdDto {
-  @IsString()
+  @ApiProperty({
+    type: String,
+    description: 'This is important',
+  })
   id: string;
 }

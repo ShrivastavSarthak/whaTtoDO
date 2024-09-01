@@ -1,18 +1,26 @@
-import { IsString } from 'class-validator';
+import { ApiProperty } from '@nestjs/swagger';
 
 export class CreateTaskDto {
-
   // @IsString()
   // childId: string;
-  
-  @IsString()
+
+  @ApiProperty({
+    type: String,
+    description: 'This is important',
+  })
   created_by: string;
 
-  @IsString()
+  @ApiProperty({
+    type: String,
+    description: 'This is important',
+  })
   taskName: string;
 }
 
-export class UpdateTaskDto{
-  @IsString()
+export class UpdateTaskDto {
+  @ApiProperty({
+    type: String,
+    description: 'This is important',
+  })
   taskName: string;
 }

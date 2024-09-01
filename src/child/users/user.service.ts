@@ -2,15 +2,18 @@ import { Injectable, UnauthorizedException } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
 import { Model } from 'mongoose';
 import { User } from 'src/Schemas/cSchema/user.schema';
-import { CreateUsrDto, LoginUserDto } from './dtos/User.dto';
+import { CreateUsrDto, LoginUserDto, VerifyUser } from './dtos/User.dto';
 import { JwtService } from '@nestjs/jwt';
 import bcrypt from 'bcryptjs';
+import { EmailService } from 'src/utils/email';
+import { EmailOptions } from 'src/type';
 
 @Injectable()
 export class UserService {
   constructor(
     @InjectModel(User.name) private userModel: Model<User>,
     private jwtService: JwtService,
+    private emailService: EmailService,
   ) {}
 
   async signupUser(createUserDto: CreateUsrDto) {
@@ -18,16 +21,25 @@ export class UserService {
       const salt = await bcrypt.genSalt(10);
       const hashedPassword = await bcrypt.hash(createUserDto.password, salt);
 
-      const newUser = await this.userModel.create({
+      const newChild = await this.userModel.create({
         email: createUserDto.email,
         userName: createUserDto.userName,
         phoneNo: createUserDto.phoneNo,
         password: hashedPassword,
       });
 
+      if (newChild) {
+        const mailOptions: EmailOptions = {
+          to: newChild.email,
+          subject: 'Just one step away!!',
+          body: 'Hey!! click on the below link to verify your email',
+        };
+        this.emailService.sendMail(mailOptions);
+      }
+
       return {
         message: 'user created successfully',
-        newUser,
+        newChild,
       };
     } catch (error) {
       throw new Error(error);
@@ -60,6 +72,49 @@ export class UserService {
         };
       }
     } else {
+      throw new UnauthorizedException();
+    }
+  }
+
+  async verifyUser(verifyUser: VerifyUser) {
+    try {
+      const check = await this.userModel.findByIdAndUpdate(verifyUser.id, {
+        isVerified: true,
+      });
+
+      if (check) {
+        return {
+          message: 'User verified successfully',
+          check,
+        };
+      }
+    } catch (err) {
+      throw new UnauthorizedException();
+    }
+  }
+
+  async resendVerificationEmail(verifyUser: VerifyUser) {
+    try {
+      const findUser = await this.userModel.findById(verifyUser.id);
+
+      if (findUser) {
+        const mailOptions: EmailOptions = {
+          to: findUser.email,
+          subject: 'Just one step away!!',
+          body: 'Hey!! click on the below link to verify your email',
+        };
+        await this.emailService.sendMail(mailOptions);
+
+        return {
+          message: 'Mail send successfully',
+          status: 200,
+        };
+      }
+      return {
+        message: 'User not found',
+        status: 404,
+      };
+    } catch (error) {
       throw new UnauthorizedException();
     }
   }

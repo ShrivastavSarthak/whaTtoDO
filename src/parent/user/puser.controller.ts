@@ -1,6 +1,8 @@
 import {
   Body,
   Controller,
+  Get,
+  Param,
   Post,
   UseGuards,
   UsePipes,
@@ -10,7 +12,9 @@ import { AuthGuard } from 'src/auth/auth.gurd';
 import { AddChild, CreatePatentDto, LoginUserDto } from './dto/Puser.dto';
 // eslint-disable-next-line @typescript-eslint/no-unused-vars
 import { pUserService } from './puser.service';
+import { ApiTags } from '@nestjs/swagger';
 
+@ApiTags('parent-auth')
 @Controller('pUser')
 export class pUserController {
   constructor(private pUserService: pUserService) {}
@@ -35,5 +39,15 @@ export class pUserController {
   addChildren(@Body() addchild: AddChild) {
     console.log(AddChild);
     return this.pUserService.addChildren(addchild);
+  }
+
+  @Get('/verified/:id')
+  verifyUser(@Param('id') id: string) {
+    return this.pUserService.verifyUser({ id });
+  }
+
+  @Get('/resend-verification-mail/:id')
+  resendVerificationMail(@Param('id') id: string) {
+    return this.pUserService.resendVerificationEmail({ id });
   }
 }
