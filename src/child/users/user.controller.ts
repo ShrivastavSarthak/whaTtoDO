@@ -1,13 +1,17 @@
 import {
   Body,
   Controller,
+  Get,
+  Param,
   Post,
   UsePipes,
   ValidationPipe,
 } from '@nestjs/common';
 import { UserService } from './user.service';
 import { CreateUsrDto, LoginUserDto } from './dtos/User.dto';
+import { ApiTags } from '@nestjs/swagger';
 
+@ApiTags('child-auth')
 @Controller('user')
 export class UserController {
   constructor(private userService: UserService) {}
@@ -21,12 +25,19 @@ export class UserController {
 
   @Post('/signin')
   @UsePipes(new ValidationPipe())
-  loginUser(@Body() loginUser: LoginUserDto) {
+  LoginUser(@Body() loginUser: LoginUserDto) {
     console.log(loginUser);
 
     return this.userService.loginUser(loginUser);
   }
 
+  @Get('/verified/:id')
+  verifyUser(@Param('id') id: string) {
+    return this.userService.verifyUser({ id });
+  }
 
-
+  @Get('/resend-verification-mail/:id')
+  resendVerificationMail(@Param('id') id: string) {
+    return this.userService.resendVerificationEmail({ id });
+  }
 }

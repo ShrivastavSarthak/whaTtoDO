@@ -3,7 +3,12 @@ import { JwtService } from '@nestjs/jwt';
 import { InjectModel } from '@nestjs/mongoose';
 import { Model } from 'mongoose';
 import { pUser } from 'src/Schemas/pSchema/pUser.schema';
-import { AddChild, CreatePatentDto, LoginUserDto } from './dto/Puser.dto';
+import {
+  AddChild,
+  CreatePatentDto,
+  LoginUserDto,
+  VerifyUser,
+} from './dto/Puser.dto';
 import { User } from 'src/Schemas/cSchema/user.schema';
 import bcrypt from 'bcryptjs';
 import { EmailService } from 'src/utils/email';
@@ -56,7 +61,7 @@ export class pUserService {
   ): Promise<{ access_token: string; user_id: any }> {
     try {
       const isParent = await this.pUserModel.findOne({
-        $or: [{ userName: loginUser.userName }, { email: loginUser.email }],
+        $or: [{ userName: loginUser.userNameOrEmail }, { email: loginUser.userNameOrEmail }],
       });
 
       if (isParent) {
@@ -141,6 +146,49 @@ export class pUserService {
       };
     } catch (error) {
       throw new Error(error);
+    }
+  }
+
+  async verifyUser(verifyUser: VerifyUser) {
+    try {
+      const check = await this.pUserModel.findByIdAndUpdate(verifyUser.id, {
+        verified: true,
+      });
+
+      if (check) {
+        return {
+          message: 'User verified successfully',
+          check,
+        };
+      }
+    } catch (err) {
+      throw new UnauthorizedException();
+    }
+  }
+
+  async resendVerificationEmail(verifyUser: VerifyUser) {
+    try {
+      const findUser = await this.pUserModel.findById(verifyUser.id);
+
+      if (findUser) {
+        const mailOptions: EmailOptions = {
+          to: findUser.email,
+          subject: 'Just one step away!!',
+          body: 'Hey!! click on the below link to verify your email',
+        };
+        await this.emailService.sendMail(mailOptions);
+
+        return {
+          message: 'Mail send successfully',
+          status: 200,
+        };
+      }
+      return {
+        message: 'User not found',
+        status: 404,
+      };
+    } catch (error) {
+      throw new UnauthorizedException();
     }
   }
 }

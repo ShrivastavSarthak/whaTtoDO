@@ -1,23 +1,42 @@
-import { IsString } from 'class-validator';
+import { ApiProperty } from '@nestjs/swagger';
+
 
 export class CreateAdminDto {
-  @IsString()
+  @ApiProperty({
+    type: String,
+    description: 'This is important',
+  })
   name: string;
-  
-  @IsString()
+
+  @ApiProperty({
+    type: String,
+    description: 'This is important',
+  })
   userName: string;
 
-  @IsString()
+  @ApiProperty({
+    type: String,
+    description: 'This is important',
+  })
   email: string;
 
-  @IsString()
+  @ApiProperty({
+    type: String,
+    description: 'This is important',
+  })
   password: string;
 }
 
 export class LoginAdminDto {
-  @IsString()
+  @ApiProperty({
+    type: String,
+    description: 'This is important',
+  })
   userNameOrEmail: string;
 
-  @IsString()
+  @ApiProperty({
+    type: String,
+    description: 'This is important',
+  })
   password: string;
 }

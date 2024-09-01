@@ -1,6 +1,5 @@
 import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
 import { IsArray } from 'class-validator';
-import mongoose from 'mongoose';
 
 @Schema()
 export class User {
@@ -23,6 +22,9 @@ export class User {
 
   @Prop({ required: true })
   password: string;
+
+  @Prop({ default: false })
+  isVerified: boolean;
 
   @Prop({
     type: [String],

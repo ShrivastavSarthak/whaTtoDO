@@ -1,45 +1,78 @@
-import { IsEnum, IsNumber, IsOptional, IsString } from 'class-validator';
+import { ApiProperty } from '@nestjs/swagger';
 import { gender, occupation } from 'src/enum/parent.enum';
 
 export class CreatePatentDto {
-  @IsString()
+  @ApiProperty({
+    type: String,
+    description: 'This is important',
+  })
   name: string;
 
-  @IsString()
+  @ApiProperty({
+    type: String,
+    description: 'This is important',
+  })
   userName: string;
 
-  @IsString()
+  @ApiProperty({
+    type: String,
+    description: 'This is important',
+  })
   email: string;
 
-  @IsNumber()
+  @ApiProperty({
+    type: Number,
+    description: 'This is important',
+  })
   phoneNo: number;
 
-  @IsString()
+  @ApiProperty({
+    type: String,
+    description: 'This is important',
+  })
   password: string;
 
-  @IsEnum(gender)
+  @ApiProperty({
+    enum: gender,
+    description: 'This is important',
+  })
   gender: gender;
 
-  @IsEnum(occupation)
+  @ApiProperty({
+    enum: occupation,
+    description: 'This is important',
+    example: occupation.GOVERNMENT_EMPLOYEE
+  })
   occupation: occupation;
 }
 
 export class LoginUserDto {
-  @IsString()
-  @IsOptional()
-  userName: string;
+  @ApiProperty({
+    type: String,
+    description: 'This is important',
+  })
+  userNameOrEmail: string;
 
-  @IsString()
-  @IsOptional()
-  email: string;
-
-  @IsString()
+  @ApiProperty({
+    type: String,
+    description: 'This is important',
+  })
   password: string;
 }
 
-
-export class AddChild{
-  @IsString()
+export class AddChild {
+  @ApiProperty({
+    type: String,
+    description: 'This is important',
+  })
   childUsername: string;
-  parentId:string
+  parentId: string;
+}
+
+export class VerifyUser {
+  @ApiProperty({
+    type: String,
+    description: 'This is important',
+  })
+  id: string;
 }

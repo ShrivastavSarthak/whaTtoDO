@@ -7,7 +7,9 @@ import {
 } from '@nestjs/common';
 import { AdminUserService } from './Auser.service';
 import { CreateAdminDto, LoginAdminDto } from './dto/Auser.dto';
+import { ApiTags } from '@nestjs/swagger';
 
+@ApiTags("admin-auth")
 @Controller('admin')
 export class AdminController {
   constructor(private adminService: AdminUserService) {}
