@@ -6,7 +6,6 @@ import { pUser } from 'src/Schemas/pSchema/pUser.schema';
 import {
   DeleteTaskByIdDto,
   FetchByIdDto,
-  ReadChildTaskByIdDto,
   RemoveParentChildRelationDto,
 } from './dto/Atask.dto';
 import { Task } from 'src/Schemas/cSchema/task.schema';
@@ -19,16 +18,24 @@ export class AdminTaskService {
     @InjectModel(Task.name) private TaskModel: Model<Task>,
   ) {}
 
-  async getAllParent(): Promise<{
+  async getAllParent({
+    pageSize,
+    pageNo,
+  }: {
+    pageSize: number;
+    pageNo: number;
+  }): Promise<{
     message: string;
     data: any;
     status: number | string;
   }> {
     try {
-      console.log('hii');
+      const skip = (pageNo - 1) * pageSize;
 
-      const fetchAllParent = await this.patentUserModel.find();
-      console.log(fetchAllParent);
+      const fetchAllParent = await this.patentUserModel
+        .find()
+        .skip(skip)
+        .limit(pageSize);
 
       if (!fetchAllParent) {
         return { message: 'No parent found', data: [], status: 200 };
@@ -44,13 +51,23 @@ export class AdminTaskService {
     }
   }
 
-  async getAllChildren(): Promise<{
+  async getAllChildren({
+    pageNo,
+    pageSize,
+  }: {
+    pageNo: number;
+    pageSize: number;
+  }): Promise<{
     message: string;
     data: any;
     status: number | string;
   }> {
     try {
-      const fetchAllChildren = await this.childUserModel.find();
+      const skip = (pageNo - 1) * pageSize;
+      const fetchAllChildren = await this.childUserModel
+        .find()
+        .skip(skip)
+        .limit(pageSize);
 
       if (!fetchAllChildren) {
         return { message: 'No children found', data: [], status: 200 };
@@ -153,11 +170,14 @@ export class AdminTaskService {
     }
   }
 
-  async readChildData(readChildTaskByIdDto: ReadChildTaskByIdDto) {
+  async readChildData(pageNo, pageSize, childId) {
     try {
+      const skip = (pageNo - 1) * pageSize;
       const fetchData = await this.TaskModel.find({
-        created_by: readChildTaskByIdDto.id,
-      });
+        created_by: childId,
+      })
+        .skip(skip)
+        .limit(pageSize);
 
       if (!fetchData) {
         return {

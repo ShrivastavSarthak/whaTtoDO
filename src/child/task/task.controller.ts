@@ -13,10 +13,11 @@ import {
 import { TaskService } from './task.service';
 import { CreateTaskDto, UpdateTaskDto } from './dtos/Task.dto';
 import { AuthGuard } from 'src/auth/auth.gurd';
-import { ApiTags } from '@nestjs/swagger';
+import { ApiBearerAuth, ApiTags } from '@nestjs/swagger';
 
-@ApiTags("child-task")
-@Controller('task')
+@ApiTags('child-task')
+@ApiBearerAuth('access-token')
+@Controller('api/v1/task')
 export class TaskController {
   constructor(private taskService: TaskService) {}
 

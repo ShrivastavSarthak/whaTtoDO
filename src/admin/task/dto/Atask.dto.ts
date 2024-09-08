@@ -1,5 +1,19 @@
 import { ApiProperty } from '@nestjs/swagger';
 
+export class Pagination {
+  @ApiProperty({
+    type: Number,
+    description: 'Page number',
+  })
+  pageSize: number;
+
+  @ApiProperty({
+    type: Number,
+    description: 'Page number',
+  })
+  pageNumber: number;
+}
+
 export class FetchByIdDto {
   @ApiProperty({
     type: String,

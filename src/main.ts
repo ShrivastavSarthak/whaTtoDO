@@ -6,9 +6,16 @@ async function bootstrap() {
   const app = await NestFactory.create(AppModule);
   const apiPath = '/';
   const options = new DocumentBuilder()
-    .addBearerAuth()
+    .addBearerAuth(
+      {
+        type: 'http',
+        scheme: 'bearer',
+        bearerFormat: 'JWT',
+      },
+      'access-token',
+    )
     .setTitle('whaToDO')
-    .setDescription('Swagger example')
+    .setDescription('API for version 1.0')
     .setVersion('1.0')
     .build();
 
