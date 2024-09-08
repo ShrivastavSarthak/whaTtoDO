@@ -18,10 +18,11 @@ import {
   UpdateParentTaskDto,
 } from './dtos/Ptask.dto';
 import { AuthGuard } from 'src/auth/auth.gurd';
-import { ApiTags } from '@nestjs/swagger';
+import { ApiBearerAuth, ApiTags } from '@nestjs/swagger';
 
-@ApiTags("parent-task")
+@ApiTags('parent-task')
 @Controller('ptask')
+@ApiBearerAuth('api/v1/access-token')
 export class pTaskController {
   constructor(private pTaskService: pTaskUserService) {}
 

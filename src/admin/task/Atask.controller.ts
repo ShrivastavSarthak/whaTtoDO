@@ -1,29 +1,43 @@
-import { Body, Controller, Get, Param, Patch, Post, UseGuards } from '@nestjs/common';
+import {
+  Body,
+  Controller,
+  Delete,
+  Get,
+  Param,
+  Patch,
+  UseGuards,
+} from '@nestjs/common';
 import { AdminTaskService } from './Atask.service';
 import { AuthGuard } from 'src/auth/auth.gurd';
 import {
   DeleteTaskByIdDto,
-  ReadChildTaskByIdDto,
   RemoveParentChildRelationDto,
 } from './dto/Atask.dto';
-import { ApiTags } from '@nestjs/swagger';
+import { ApiBearerAuth, ApiTags } from '@nestjs/swagger';
 
-@ApiTags("admin-task")
+@ApiTags('admin-task')
 @UseGuards(AuthGuard)
-@Controller('admin-task')
+@ApiBearerAuth('access-token')
+@Controller('api/v1/admin-task')
 export class adminTaskController {
   constructor(private adminTaskService: AdminTaskService) {}
 
   @UseGuards(AuthGuard)
-  @Get('/get-parent')
-  fetchParent() {
-    return this.adminTaskService.getAllParent();
+  @Get('/get-parent/pageno/:pageNo/pagesize/:pageSize')
+  fetchParent(
+    @Param('pageSize') pageSize: number,
+    @Param('pageNo') pageNo: number,
+  ) {
+    return this.adminTaskService.getAllParent({ pageSize, pageNo });
   }
 
   @UseGuards(AuthGuard)
-  @Get('/get-children')
-  fetchChildren() {
-    return this.adminTaskService.getAllChildren();
+  @Get('/get-children/pageno/:pageNo/pagesize/:pageSize')
+  fetchChildren(
+    @Param('pageSize') pageSize: number,
+    @Param('pageNo') pageNo: number,
+  ) {
+    return this.adminTaskService.getAllChildren({ pageSize, pageNo });
   }
 
   @UseGuards(AuthGuard)
@@ -45,13 +59,17 @@ export class adminTaskController {
   }
 
   @UseGuards(AuthGuard)
-  @Post('/read-child-task')
-  readTaskById(@Body() readChildTaskByIdDto: ReadChildTaskByIdDto) {
-    return this.adminTaskService.readChildData(readChildTaskByIdDto);
+  @Get('/read-child-task/:childId/pageno/:pageNo/pagesize/:pageSize')
+  readTaskById(
+    @Param('childId') childId: string,
+    @Param('pageSize') pageSize: number,
+    @Param('pageNo') pageNo: number,
+  ) {
+    return this.adminTaskService.readChildData(pageNo, pageSize, childId);
   }
 
   @UseGuards(AuthGuard)
-  @Post('/delete-child-task')
+  @Delete('/delete-child-task')
   deleteTask(@Body() deleteTaskByIdDto: DeleteTaskByIdDto) {
     return this.adminTaskService.deleteTaskById(deleteTaskByIdDto);
   }
