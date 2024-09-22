@@ -22,7 +22,7 @@ import { ApiBearerAuth, ApiTags } from '@nestjs/swagger';
 
 @ApiTags('parent-task')
 @Controller('ptask')
-@ApiBearerAuth('api/v1/access-token')
+@ApiBearerAuth('access-token')
 export class pTaskController {
   constructor(private pTaskService: pTaskUserService) {}
 

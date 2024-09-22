@@ -1,12 +1,13 @@
 import { Module } from '@nestjs/common';
 import { MongooseModule } from '@nestjs/mongoose';
-import { UsersModule } from './child/users/user.module';
-import { TaskModule } from './child/task/task.module';
-import { pUserModule } from './parent/user/puser.module';
-import { AdminModule } from './admin/user/Auser.module';
-import { AdminTaskModule } from './admin/task/Atask.module';
-import { pTaskModule } from './parent/task/Ptask.module';
+import { UsersModule } from './users/child/users/user.module';
+import { TaskModule } from './users/child/task/task.module';
+import { pUserModule } from './users/parent/user/puser.module';
+import { AdminModule } from './users/admin/user/Auser.module';
+import { AdminTaskModule } from './users/admin/task/Atask.module';
+import { pTaskModule } from './users/parent/task/Ptask.module';
 import { ConfigModule } from '@nestjs/config';
+import { PaymentsModule } from './Payment/payments.module';
 
 @Module({
   imports: [
@@ -19,6 +20,7 @@ import { ConfigModule } from '@nestjs/config';
     AdminModule,
     AdminTaskModule,
     pTaskModule,
+    PaymentsModule,
     ConfigModule.forRoot({
       envFilePath: '.env',
       isGlobal: true,
