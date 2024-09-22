@@ -12,7 +12,7 @@ import { AuthGuard } from 'src/auth/auth.gurd';
 import { AddChild, CreatePatentDto, LoginUserDto } from './dto/Puser.dto';
 // eslint-disable-next-line @typescript-eslint/no-unused-vars
 import { pUserService } from './puser.service';
-import { ApiTags } from '@nestjs/swagger';
+import { ApiBearerAuth, ApiTags } from '@nestjs/swagger';
 
 @ApiTags('parent-auth')
 @Controller('pUser')
@@ -34,6 +34,7 @@ export class pUserController {
   }
 
   @UseGuards(AuthGuard)
+  @ApiBearerAuth('api/v1/access-token')
   @Post('/add-child')
   @UsePipes(new ValidationPipe())
   addChildren(@Body() addchild: AddChild) {
