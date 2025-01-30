@@ -25,7 +25,6 @@ export class TaskController {
   @Post('/create_task')
   @UsePipes(new ValidationPipe())
   createTask(@Body() createTask: CreateTaskDto) {
-    console.log(createTask);
     return this.taskService.addTask(createTask);
   }
 
@@ -42,7 +41,6 @@ export class TaskController {
   @UseGuards(AuthGuard)
   @Patch('/update/:id')
   updateTask(@Param('id') id: string, @Body() updateTask: UpdateTaskDto) {
-    console.log(updateTask);
     const task: string = updateTask.taskName;
     return this.taskService.updateTask(id, task);
   }

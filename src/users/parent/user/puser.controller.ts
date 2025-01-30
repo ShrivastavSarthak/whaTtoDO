@@ -22,14 +22,12 @@ export class pUserController {
   @Post('/parent-signup')
   @UsePipes(new ValidationPipe())
   createParent(@Body() createParent: CreatePatentDto) {
-    console.log(createParent);
     return this.pUserService.signupParent(createParent);
   }
 
   @Post('/parent-login')
   @UsePipes(new ValidationPipe())
   loginParent(@Body() loginUser: LoginUserDto) {
-    console.log(loginUser);
     return this.pUserService.loginParent(loginUser);
   }
 
@@ -38,7 +36,6 @@ export class pUserController {
   @Post('/add-child')
   @UsePipes(new ValidationPipe())
   addChildren(@Body() addchild: AddChild) {
-    console.log(AddChild);
     return this.pUserService.addChildren(addchild);
   }
 

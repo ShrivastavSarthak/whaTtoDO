@@ -19,15 +19,12 @@ export class UserController {
   @Post('/signup')
   @UsePipes(new ValidationPipe())
   createUser(@Body() createUser: CreateUsrDto) {
-    console.log(createUser);
     return this.userService.signupUser(createUser);
   }
 
   @Post('/signin')
   @UsePipes(new ValidationPipe())
   LoginUser(@Body() loginUser: LoginUserDto) {
-    console.log(loginUser);
-
     return this.userService.loginUser(loginUser);
   }
 

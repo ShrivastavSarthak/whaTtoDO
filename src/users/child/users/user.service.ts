@@ -7,7 +7,7 @@ import { JwtService } from '@nestjs/jwt';
 import bcrypt from 'bcryptjs';
 import { EmailService } from 'src/utils/email';
 import { EmailOptions } from 'src/type';
-
+import { BadRequestException } from '@nestjs/common';
 @Injectable()
 export class UserService {
   constructor(
@@ -17,33 +17,40 @@ export class UserService {
   ) {}
 
   async signupUser(createUserDto: CreateUsrDto) {
-    try {
-      const salt = await bcrypt.genSalt(10);
-      const hashedPassword = await bcrypt.hash(createUserDto.password, salt);
-
-      const newChild = await this.userModel.create({
-        email: createUserDto.email,
-        userName: createUserDto.userName,
-        phoneNo: createUserDto.phoneNo,
-        password: hashedPassword,
-      });
-
-      if (newChild) {
-        const mailOptions: EmailOptions = {
-          to: newChild.email,
-          subject: 'Just one step away!!',
-          body: 'Hey!! click on the below link to verify your email',
-        };
-        this.emailService.sendMail(mailOptions);
-      }
-
-      return {
-        message: 'user created successfully',
-        newChild,
-      };
-    } catch (error) {
-      throw new Error(error);
+    const isUserExist = await this.userModel.find({
+      $or: [
+        { email: createUserDto.email },
+        { phoneNo: createUserDto.phoneNo },
+        { username: createUserDto.userName },
+      ],
+    });
+    if (isUserExist.length > 0) {
+      throw new BadRequestException('User already exist');
     }
+
+    const salt = await bcrypt.genSalt(10);
+    const hashedPassword = await bcrypt.hash(createUserDto.password, salt);
+
+    const newChild = await this.userModel.create({
+      email: createUserDto.email,
+      userName: createUserDto.userName,
+      phoneNo: createUserDto.phoneNo,
+      password: hashedPassword,
+    });
+
+    if (newChild) {
+      const mailOptions: EmailOptions = {
+        to: newChild.email,
+        subject: 'Just one step away!!',
+        body: 'Hey!! click on the below link to verify your email',
+      };
+      this.emailService.sendMail(mailOptions);
+    }
+
+    return {
+      message: 'user created successfully',
+      newChild,
+    };
   }
   async loginUser(
     loginUser: LoginUserDto,
@@ -65,14 +72,15 @@ export class UserService {
       );
       if (checkPassword) {
         const payload = { id: isUser._id };
-        console.log(isUser._id);
         return {
           access_token: await this.jwtService.signAsync(payload),
           user_id: isUser._id,
         };
+      } else {
+        throw new UnauthorizedException('Invalid password or username');
       }
     } else {
-      throw new UnauthorizedException();
+      throw new UnauthorizedException('Invalid password or username');
     }
   }
 
