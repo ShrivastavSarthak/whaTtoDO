@@ -37,7 +37,6 @@ export class pTaskController {
   @Get('/read-Task-by-parent/pid=:pId/cid=:cId')
   @UsePipes(new ValidationPipe())
   readTaskByParent(@Param('pId') pId: string, @Param('cId') cId: string) {
-    console.log(pId, cId);
     const readTaskByParent = { pId, cId };
     return this.pTaskService.readTaskByParent(readTaskByParent);
   }

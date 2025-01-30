@@ -14,12 +14,8 @@ export class CheckRelation implements NestMiddleware {
 
   async use(req: Request, res: Response, next: NextFunction) {
     try {
-      const cId = req.params.cId || req.body.cId  ;
-      const pId = req.params.pId || req.body.pId  ;
-
-      console.log(cId,pId);
-      
-      
+      const cId = req.params.cId || req.body.cId;
+      const pId = req.params.pId || req.body.pId;
 
       const check = await this.parentModel.findOne({
         _id: pId,

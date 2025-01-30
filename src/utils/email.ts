@@ -6,8 +6,6 @@ import { EmailOptions } from 'src/type';
 export class EmailService {
   constructor(private readonly mailerService: MailerService) {}
   async sendMail(emailOptions: EmailOptions) {
-    console.log(emailOptions);
-
     try {
       await this.mailerService.sendMail({
         from: 'Email verification <sharthakshrivastav20112002@gmail.com>',
@@ -15,8 +13,6 @@ export class EmailService {
         subject: emailOptions.subject,
         text: emailOptions.body,
       });
-    } catch (error) {
-      console.log(error);
-    }
+    } catch (error) {}
   }
 }

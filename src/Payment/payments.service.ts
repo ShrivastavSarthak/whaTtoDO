@@ -1,4 +1,10 @@
-import { HttpException, HttpStatus, Injectable } from '@nestjs/common';
+import {
+  BadRequestException,
+  HttpException,
+  HttpStatus,
+  Injectable,
+  InternalServerErrorException,
+} from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import Razorpay from 'razorpay';
 import { v4 as uuidv4 } from 'uuid';
@@ -55,15 +61,10 @@ export class PaymentsService {
           status_code: 200,
         };
       } else {
-        return {
-          message: 'payment failed',
-          status_code: 400,
-        };
+        throw new BadRequestException('Payment verification failed');
       }
     } catch (error) {
-      throw new Error(error);
-
-      console.log(error);
+      throw new InternalServerErrorException('Something went wrong');
     }
   }
 }

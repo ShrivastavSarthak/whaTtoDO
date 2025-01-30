@@ -13,11 +13,11 @@ export class AdminUserService {
     private jwtService: JwtService,
   ) {}
 
-  async signup(createAdminDto: CreateAdminDto):Promise<{
+  async signup(createAdminDto: CreateAdminDto): Promise<{
     message: string;
-    access_token: string,
-    userId:any,
-    status: number | string
+    access_token: string;
+    userId: any;
+    status: number | string;
   }> {
     try {
       const salt = await bcrypt.genSalt(10);
@@ -31,8 +31,8 @@ export class AdminUserService {
       });
 
       const payload = {
-        id: newAdmin._id
-      }
+        id: newAdmin._id,
+      };
 
       return {
         message: ' Admin created successfully',
@@ -45,16 +45,14 @@ export class AdminUserService {
     }
   }
 
-  async login(
-    loginAdminDto: LoginAdminDto,
-  ): Promise<{
+  async login(loginAdminDto: LoginAdminDto): Promise<{
     message: string;
     access_token: string;
     userId: any;
-    status: number| string
+    status: number | string;
   }> {
     try {
-      const findAdmin =await  this.adminUserModel.findOne({
+      const findAdmin = await this.adminUserModel.findOne({
         $or: [
           { userName: loginAdminDto.userNameOrEmail },
           { email: loginAdminDto.userNameOrEmail },
@@ -82,11 +80,9 @@ export class AdminUserService {
         message: 'Logged in successfully',
         access_token: await this.jwtService.signAsync(payload),
         userId: payload.id,
-        status: 201
+        status: 201,
       };
     } catch (error) {
-        console.log(error);
-        
       throw new Error('Something went wrong ');
     }
   }

@@ -1,4 +1,8 @@
-import { Injectable, UnauthorizedException } from '@nestjs/common';
+import {
+  BadRequestException,
+  Injectable,
+  UnauthorizedException,
+} from '@nestjs/common';
 import { JwtService } from '@nestjs/jwt';
 import { InjectModel } from '@nestjs/mongoose';
 import { Model } from 'mongoose';
@@ -24,36 +28,44 @@ export class pUserService {
   ) {}
 
   async signupParent(createParentDto: CreatePatentDto) {
-    try {
-      const salt = await bcrypt.genSalt(10);
-      const hashedPassword = await bcrypt.hash(createParentDto.password, salt);
+    const isUserExist = await this.pUserModel.find({
+      $or: [
+        { email: createParentDto.email },
+        { phoneNo: createParentDto.phoneNo },
+        { username: createParentDto.userName },
+      ],
+    });
 
-      const newParent = await this.pUserModel.create({
-        name: createParentDto.name,
-        userName: createParentDto.userName,
-        email: createParentDto.email,
-        phoneNo: createParentDto.phoneNo,
-        password: hashedPassword,
-        gender: createParentDto.gender,
-        occupation: createParentDto.occupation,
-      });
-
-      if (newParent) {
-        const mailOptions: EmailOptions = {
-          to: newParent.email,
-          subject: 'One step away!!',
-          body: 'Hey!! click on the below link to verify your email',
-        };
-        this.emailService.sendMail(mailOptions);
-      }
-
-      return {
-        message: 'parent created successfully',
-        newParent,
-      };
-    } catch (error) {
-      throw new Error(error);
+    if (isUserExist.length > 0) {
+      throw new BadRequestException('User already exist');
     }
+
+    const salt = await bcrypt.genSalt(10);
+    const hashedPassword = await bcrypt.hash(createParentDto.password, salt);
+
+    const newParent = await this.pUserModel.create({
+      name: createParentDto.name,
+      userName: createParentDto.userName,
+      email: createParentDto.email,
+      phoneNo: createParentDto.phoneNo,
+      password: hashedPassword,
+      gender: createParentDto.gender,
+      occupation: createParentDto.occupation,
+    });
+
+    if (newParent) {
+      const mailOptions: EmailOptions = {
+        to: newParent.email,
+        subject: 'One step away!!',
+        body: 'Hey!! click on the below link to verify your email',
+      };
+      this.emailService.sendMail(mailOptions);
+    }
+
+    return {
+      message: 'parent created successfully',
+      newParent,
+    };
   }
 
   async loginParent(
@@ -61,7 +73,10 @@ export class pUserService {
   ): Promise<{ access_token: string; user_id: any }> {
     try {
       const isParent = await this.pUserModel.findOne({
-        $or: [{ userName: loginUser.userNameOrEmail }, { email: loginUser.userNameOrEmail }],
+        $or: [
+          { userName: loginUser.userNameOrEmail },
+          { email: loginUser.userNameOrEmail },
+        ],
       });
 
       if (isParent) {
