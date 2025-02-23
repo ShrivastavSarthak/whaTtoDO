@@ -1,13 +1,14 @@
-import { Injectable, UnauthorizedException } from '@nestjs/common';
+import { BadRequestException, Injectable, UnauthorizedException } from '@nestjs/common';
+import { JwtService } from '@nestjs/jwt';
 import { InjectModel } from '@nestjs/mongoose';
+import bcrypt from 'bcryptjs';
 import { Model } from 'mongoose';
 import { User } from 'src/Schemas/cSchema/user.schema';
-import { CreateUsrDto, LoginUserDto, VerifyUser } from './dtos/User.dto';
-import { JwtService } from '@nestjs/jwt';
-import bcrypt from 'bcryptjs';
-import { EmailService } from 'src/utils/email';
+import { ChildSignupInterface } from 'src/shared/interface/user-types';
 import { EmailOptions } from 'src/type';
-import { BadRequestException } from '@nestjs/common';
+import { EmailService } from 'src/utils/email';
+import { CreateUsrDto, LoginUserDto, VerifyUser } from './dtos/User.dto';
+import { ChildSignupFieldValidators } from 'src/utils/validators/fieldValidators';
 @Injectable()
 export class UserService {
   constructor(
@@ -17,11 +18,29 @@ export class UserService {
   ) {}
 
   async signupUser(createUserDto: CreateUsrDto) {
+
+    console.log('createUserDto', createUserDto);
+    
+    const userField: ChildSignupInterface = {
+      email: createUserDto.email,
+      username: createUserDto.username,
+      phoneNo: createUserDto.phoneNo,
+      password: createUserDto.password,
+    };
+
+    const checkValidation = ChildSignupFieldValidators(userField);
+
+    console.log(checkValidation);
+    
+    // if (!checkValidation) {
+    //   throw new BadRequestException(checkValidation);
+    // }
+    // TODO: NEED TO IMPROVE
     const isUserExist = await this.userModel.find({
       $or: [
         { email: createUserDto.email },
         { phoneNo: createUserDto.phoneNo },
-        { username: createUserDto.userName },
+        { username: createUserDto.username },
       ],
     });
     if (isUserExist.length > 0) {
@@ -33,7 +52,7 @@ export class UserService {
 
     const newChild = await this.userModel.create({
       email: createUserDto.email,
-      userName: createUserDto.userName,
+      username: createUserDto.username,
       phoneNo: createUserDto.phoneNo,
       password: hashedPassword,
     });
@@ -52,15 +71,16 @@ export class UserService {
       newChild,
     };
   }
+
   async loginUser(
     loginUser: LoginUserDto,
   ): Promise<{ access_token: string; user_id: string }> {
     const isEmail: any = await this.userModel.findOne({
-      email: loginUser.userNameOrEmail,
+      email: loginUser.username,
     });
 
     const isUsername: any = await this.userModel.findOne({
-      userName: loginUser.userNameOrEmail,
+      username: loginUser.username,
     });
 
     const isUser = isEmail || isUsername;

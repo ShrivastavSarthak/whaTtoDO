@@ -1,5 +1,5 @@
 import { ApiProperty } from '@nestjs/swagger';
-import { gender, occupation } from 'src/enum/parent.enum';
+import { gender, occupation } from 'src/shared/enum/parent.enum';
 
 export class CreatePatentDto {
   @ApiProperty({
@@ -12,7 +12,7 @@ export class CreatePatentDto {
     type: String,
     description: 'This is important',
   })
-  userName: string;
+  username: string;
 
   @ApiProperty({
     type: String,
@@ -21,10 +21,10 @@ export class CreatePatentDto {
   email: string;
 
   @ApiProperty({
-    type: Number,
+    type: String,
     description: 'This is important',
   })
-  phoneNo: number;
+  phoneNo: string;
 
   @ApiProperty({
     type: String,
@@ -51,7 +51,7 @@ export class LoginUserDto {
     type: String,
     description: 'This is important',
   })
-  userNameOrEmail: string;
+  username: string;
 
   @ApiProperty({
     type: String,
