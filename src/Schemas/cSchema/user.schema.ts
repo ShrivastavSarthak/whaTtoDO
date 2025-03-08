@@ -4,7 +4,7 @@ import { IsArray } from 'class-validator';
 @Schema()
 export class User {
   @Prop({ unique: true, required: true })
-  userName: string;
+  username: string;
 
   @Prop({ unique: true, required: true })
   email: string;
@@ -13,12 +13,13 @@ export class User {
     unique: true,
     required: true,
     validate: {
-      validator: function (v: number) {
+      validator: function (v: string) {
         return v.toString().length >= 10 && v.toString().length <= 10;
       },
+      message: 'Phone number should be of 10 digits',
     },
   })
-  phoneNo: number;
+  phoneNo: string;
 
   @Prop({ required: true })
   password: string;

@@ -12,7 +12,7 @@ import { PaymentsModule } from './Payment/payments.module';
 @Module({
   imports: [
     MongooseModule.forRoot(
-      'mongodb+srv://Sarthak:sarthak2002@cluster0.12szh4h.mongodb.net/',
+      'mongodb+srv://sarthak:sarthak@cluster0.yftq0jg.mongodb.net/',
     ),
     UsersModule,
     TaskModule,

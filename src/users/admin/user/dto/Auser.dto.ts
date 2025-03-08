@@ -12,7 +12,7 @@ export class CreateAdminDto {
     type: String,
     description: 'This is important',
   })
-  userName: string;
+  username: string;
 
   @ApiProperty({
     type: String,
@@ -32,7 +32,7 @@ export class LoginAdminDto {
     type: String,
     description: 'This is important',
   })
-  userNameOrEmail: string;
+  username: string;
 
   @ApiProperty({
     type: String,

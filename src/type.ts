@@ -1,8 +1,8 @@
 export interface UserInterface {
-  userName: string;
+  username: string;
   _id: string;
   email: string;
-  phoneNo: number;
+  phoneNo: string;
   password: string;
 }
 

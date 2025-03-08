@@ -8,7 +8,7 @@ import {
   UsePipes,
   ValidationPipe,
 } from '@nestjs/common';
-import { AuthGuard } from 'src/auth/auth.gurd';
+import { AuthGuard } from 'src/auth/auth.guard';
 import { AddChild, CreatePatentDto, LoginUserDto } from './dto/Puser.dto';
 // eslint-disable-next-line @typescript-eslint/no-unused-vars
 import { pUserService } from './puser.service';

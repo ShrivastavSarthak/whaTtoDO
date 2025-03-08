@@ -25,7 +25,7 @@ export class AdminUserService {
 
       const newAdmin = await this.adminUserModel.create({
         name: createAdminDto.name,
-        userName: createAdminDto.userName,
+        username: createAdminDto.username,
         email: createAdminDto.email,
         password: hashedPassword,
       });
@@ -54,8 +54,8 @@ export class AdminUserService {
     try {
       const findAdmin = await this.adminUserModel.findOne({
         $or: [
-          { userName: loginAdminDto.userNameOrEmail },
-          { email: loginAdminDto.userNameOrEmail },
+          { username: loginAdminDto.username },
+          { email: loginAdminDto.username },
         ],
       });
 

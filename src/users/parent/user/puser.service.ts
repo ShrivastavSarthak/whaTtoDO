@@ -17,6 +17,7 @@ import { User } from 'src/Schemas/cSchema/user.schema';
 import bcrypt from 'bcryptjs';
 import { EmailService } from 'src/utils/email';
 import { EmailOptions } from 'src/type';
+import { ParentSignupFieldValidators } from 'src/utils/validators/fieldValidators';
 
 @Injectable()
 export class pUserService {
@@ -28,11 +29,25 @@ export class pUserService {
   ) {}
 
   async signupParent(createParentDto: CreatePatentDto) {
+    const user = {
+      name: createParentDto.name,
+      username: createParentDto.username,
+      email: createParentDto.email,
+      phoneNo: createParentDto.phoneNo,
+      password: createParentDto.password,
+      gender: createParentDto.gender,
+      occupation: createParentDto.occupation,
+    };
+
+    if (!ParentSignupFieldValidators(user)) {
+      return;
+    }
+
     const isUserExist = await this.pUserModel.find({
       $or: [
         { email: createParentDto.email },
         { phoneNo: createParentDto.phoneNo },
-        { username: createParentDto.userName },
+        { username: createParentDto.username },
       ],
     });
 
@@ -45,7 +60,7 @@ export class pUserService {
 
     const newParent = await this.pUserModel.create({
       name: createParentDto.name,
-      userName: createParentDto.userName,
+      username: createParentDto.username,
       email: createParentDto.email,
       phoneNo: createParentDto.phoneNo,
       password: hashedPassword,
@@ -73,10 +88,7 @@ export class pUserService {
   ): Promise<{ access_token: string; user_id: any }> {
     try {
       const isParent = await this.pUserModel.findOne({
-        $or: [
-          { userName: loginUser.userNameOrEmail },
-          { email: loginUser.userNameOrEmail },
-        ],
+        $or: [{ username: loginUser.username }, { email: loginUser.username }],
       });
 
       if (isParent) {
@@ -103,7 +115,7 @@ export class pUserService {
   async addChildren(addChild: AddChild) {
     try {
       const findChild: any = await this.userModel.findOne({
-        userName: addChild.childUsername,
+        username: addChild.childUsername,
       });
 
       const findParent: any = await this.pUserModel.findById(addChild.parentId);

@@ -1,7 +1,7 @@
 
 import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
 import mongoose from 'mongoose';
-import { gender, occupation } from 'src/enum/parent.enum';
+import { gender, occupation } from 'src/shared/enum/parent.enum';
 
 @Schema()
 export class pUser {
@@ -12,7 +12,7 @@ export class pUser {
   verified: boolean
 
   @Prop({ unique: true, required: true })
-  userName: string;
+  username: string;
 
   @Prop({ unique: true, required: true })
   email: string;
