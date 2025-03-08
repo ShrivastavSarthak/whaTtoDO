@@ -8,7 +8,7 @@ import {
   UseGuards,
 } from '@nestjs/common';
 import { AdminTaskService } from './Atask.service';
-import { AuthGuard } from 'src/auth/auth.gurd';
+import { AuthGuard } from 'src/auth/auth.guard';
 import {
   DeleteTaskByIdDto,
   RemoveParentChildRelationDto,

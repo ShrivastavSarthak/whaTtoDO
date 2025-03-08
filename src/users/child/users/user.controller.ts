@@ -4,12 +4,15 @@ import {
   Get,
   Param,
   Post,
+  UseGuards,
   UsePipes,
-  ValidationPipe,
+  ValidationPipe
 } from '@nestjs/common';
-import { UserService } from './user.service';
+import { ApiBearerAuth, ApiTags } from '@nestjs/swagger';
 import { CreateUsrDto, LoginUserDto } from './dtos/User.dto';
-import { ApiTags } from '@nestjs/swagger';
+import { UserService } from './user.service';
+import { AuthGuard } from 'src/auth/auth.guard';
+import { EmailVerifyGuard } from 'src/auth/emailVerify.guard';
 
 @ApiTags('child-auth')
 @Controller('user')
@@ -28,11 +31,24 @@ export class UserController {
     return this.userService.loginUser(loginUser);
   }
 
+  @UseGuards(AuthGuard)
   @Get('/verified/:id')
+  @ApiBearerAuth('access-token')
   verifyUser(@Param('id') id: string) {
     return this.userService.verifyUser({ id });
   }
 
+  
+  @UseGuards(EmailVerifyGuard)
+  @ApiBearerAuth('access-token')
+  @Get('/:id')
+  @UsePipes(new ValidationPipe())
+  fetchUserById(@Param('id') id: string) {
+    return this.userService.fetchUserById(id);
+  }
+
+  @UseGuards(AuthGuard)
+  @ApiBearerAuth('access-token')
   @Get('/resend-verification-mail/:id')
   resendVerificationMail(@Param('id') id: string) {
     return this.userService.resendVerificationEmail({ id });

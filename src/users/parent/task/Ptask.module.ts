@@ -6,6 +6,7 @@ import { pUser, pUserSchema } from 'src/Schemas/pSchema/pUser.schema';
 import { pTaskUserService } from './Ptask.service';
 import { pTaskController } from './Ptask.controller';
 import { CheckRelation } from 'src/middleware/relation.middleware';
+import { checkVerification } from 'src/middleware/verified.middleware';
 
 @Module({
   imports: [
@@ -29,6 +30,6 @@ import { CheckRelation } from 'src/middleware/relation.middleware';
 })
 export class pTaskModule implements NestModule {
   configure(consumer: MiddlewareConsumer) {
-    consumer.apply(CheckRelation).forRoutes(pTaskController);
+    consumer.apply(CheckRelation, checkVerification).forRoutes(pTaskController);
   }
 }

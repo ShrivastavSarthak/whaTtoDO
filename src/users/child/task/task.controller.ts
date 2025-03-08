@@ -12,7 +12,7 @@ import {
 } from '@nestjs/common';
 import { TaskService } from './task.service';
 import { CreateTaskDto, UpdateTaskDto } from './dtos/Task.dto';
-import { AuthGuard } from 'src/auth/auth.gurd';
+import { AuthGuard } from 'src/auth/auth.guard';
 import { ApiBearerAuth, ApiTags } from '@nestjs/swagger';
 
 @ApiTags('child-task')

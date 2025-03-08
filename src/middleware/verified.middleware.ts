@@ -6,7 +6,7 @@ import { User } from 'src/Schemas/cSchema/user.schema';
 import { pUser } from 'src/Schemas/pSchema/pUser.schema';
 
 @Injectable()
-export class CheckRelation implements NestMiddleware {
+export class checkVerification implements NestMiddleware {
   constructor(
     @InjectModel(User.name) private childModel: Model<User>,
     @InjectModel(pUser.name) private parentModel: Model<pUser>,
@@ -14,20 +14,18 @@ export class CheckRelation implements NestMiddleware {
 
   async use(req: Request, res: Response, next: NextFunction) {
     try {
-      const cId = req.params.cId || req.body.cId;
-      const pId = req.params.pId || req.body.pId;
+      const userId = req.params.id || req.body.id;
 
-      const check = await this.parentModel.findOne({
-        _id: pId,
-        children: { $in: [cId] },
-      });
+      const checkVerification =
+        (await this.childModel.findById(userId)) ||
+        (await this.parentModel.findById(userId));
 
-      if (check) {
-        next();
-      } else {
+      if (!checkVerification) {
         res.status(409).json({
           message: 'Relation not found',
         });
+      } else {
+        next();
       }
     } catch (error) {
       res.status(400).json({

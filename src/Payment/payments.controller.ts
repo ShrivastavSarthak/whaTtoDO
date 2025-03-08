@@ -9,7 +9,7 @@ import {
 import { PaymentsService } from './payments.service';
 import { CreatePaymentDtos, VerifyPaymentDtos } from './dtos/paymentDtos';
 import { ApiBearerAuth, ApiTags } from '@nestjs/swagger';
-import { AuthGuard } from 'src/auth/auth.gurd';
+import { AuthGuard } from 'src/auth/auth.guard';
 
 @ApiBearerAuth('access-token')
 @ApiTags('Payment')

@@ -1,4 +1,8 @@
-import { BadRequestException, Injectable, UnauthorizedException } from '@nestjs/common';
+import {
+  BadRequestException,
+  Injectable,
+  UnauthorizedException,
+} from '@nestjs/common';
 import { JwtService } from '@nestjs/jwt';
 import { InjectModel } from '@nestjs/mongoose';
 import bcrypt from 'bcryptjs';
@@ -18,9 +22,8 @@ export class UserService {
   ) {}
 
   async signupUser(createUserDto: CreateUsrDto) {
-
     console.log('createUserDto', createUserDto);
-    
+
     const userField: ChildSignupInterface = {
       email: createUserDto.email,
       username: createUserDto.username,
@@ -31,7 +34,7 @@ export class UserService {
     const checkValidation = ChildSignupFieldValidators(userField);
 
     console.log(checkValidation);
-    
+
     // if (!checkValidation) {
     //   throw new BadRequestException(checkValidation);
     // }
@@ -58,10 +61,11 @@ export class UserService {
     });
 
     if (newChild) {
+      const verificationLink = `http://localhost:3001/verify/${newChild._id}`;
       const mailOptions: EmailOptions = {
         to: newChild.email,
         subject: 'Just one step away!!',
-        body: 'Hey!! click on the below link to verify your email',
+        body: `Hey!! click on the this link to verify your account: ${verificationLink}`,
       };
       this.emailService.sendMail(mailOptions);
     }
@@ -91,7 +95,7 @@ export class UserService {
         isUser.password,
       );
       if (checkPassword) {
-        const payload = { id: isUser._id };
+        const payload = { id: isUser._id, isVerified: isUser.isVerified };
         return {
           access_token: await this.jwtService.signAsync(payload),
           user_id: isUser._id,
@@ -101,6 +105,20 @@ export class UserService {
       }
     } else {
       throw new UnauthorizedException('Invalid password or username');
+    }
+  }
+
+  async fetchUserById(id: string) {
+    try {
+      const user = await this.userModel.findById(id).select('-password');
+      if (user) {
+        return {
+          message: 'User fetched successfully',
+          user,
+        };
+      }
+    } catch (err) {
+      throw new UnauthorizedException();
     }
   }
 

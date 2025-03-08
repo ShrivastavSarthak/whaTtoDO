@@ -17,7 +17,7 @@ import {
   DeleteParentTaskDto,
   UpdateParentTaskDto,
 } from './dtos/Ptask.dto';
-import { AuthGuard } from 'src/auth/auth.gurd';
+import { AuthGuard } from 'src/auth/auth.guard';
 import { ApiBearerAuth, ApiTags } from '@nestjs/swagger';
 
 @ApiTags('parent-task')
