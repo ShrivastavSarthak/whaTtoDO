@@ -74,7 +74,7 @@ export class UserService {
         tokenExpiry: new Date(Date.now() + 5 * 60 * 1000),
       });
 
-      const verificationLink = `http://localhost:3001/verify/${newChild._id}/${emailToken}`;
+      const verificationLink = `${process.env.FRONTEND_PROD_URL}/${newChild._id}/${emailToken}`;
       const mailOptions: EmailOptions = {
         to: newChild.email,
         subject: 'Just one step away!!',
@@ -201,7 +201,7 @@ export class UserService {
           tokenExpiry: new Date(Date.now() + 5 * 60 * 1000),
         });
 
-        const verificationLink = `http://localhost:3001/verify/${findUser._id}/${emailToken}`;
+        const verificationLink = `${process.env.FRONTEND_PROD_URL}/${findUser._id}/${emailToken}`;
         const mailOptions: EmailOptions = {
           to: findUser.email,
           subject: 'Just one step away!!',
