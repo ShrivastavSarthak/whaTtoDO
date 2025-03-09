@@ -4,7 +4,7 @@ import { User, UserSchema } from 'src/Schemas/cSchema/user.schema';
 import { UserService } from './user.service';
 import { UserController } from './user.controller';
 import { JwtModule } from '@nestjs/jwt';
-import { EmailService } from 'src/utils/email';
+import { EmailService } from 'src/utils/services/email';
 
 @Module({
   imports: [

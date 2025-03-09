@@ -15,7 +15,7 @@ import {
 } from './dto/Puser.dto';
 import { User } from 'src/Schemas/cSchema/user.schema';
 import bcrypt from 'bcryptjs';
-import { EmailService } from 'src/utils/email';
+import { EmailService } from 'src/utils/services/email';
 import { EmailOptions } from 'src/type';
 import { ParentSignupFieldValidators } from 'src/utils/validators/fieldValidators';
 

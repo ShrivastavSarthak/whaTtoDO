@@ -39,6 +39,18 @@ export class User {
   })
   @IsArray()
   parent: string[];
+
+  @Prop()
+  verificationToken: string;
+
+  @Prop()
+  tokenExpiry: Date;
+
+  @Prop({ default: new Date() })
+  created_at: Date;
+
+  @Prop({ default: new Date() })
+  updated_at: Date;
 }
 
 export const UserSchema = SchemaFactory.createForClass(User);

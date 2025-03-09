@@ -48,4 +48,17 @@ export class VerifyUser{
     })
     id:string
 
+  @ApiProperty({
+      type: String,
+      description: 'This is important',
+    })
+    verifyToken:string
+}
+
+export class ResendVerificationEmail{
+  @ApiProperty({
+      type: String,
+      description: 'This is important',
+    })
+    id:string
 }
