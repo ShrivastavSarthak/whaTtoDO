@@ -10,8 +10,13 @@ import { Model } from 'mongoose';
 import { User } from 'src/Schemas/cSchema/user.schema';
 import { ChildSignupInterface } from 'src/shared/interface/user-types';
 import { EmailOptions } from 'src/type';
-import { EmailService } from 'src/utils/email';
-import { CreateUsrDto, LoginUserDto, VerifyUser } from './dtos/User.dto';
+import { EmailService } from 'src/utils/services/email';
+import {
+  CreateUsrDto,
+  LoginUserDto,
+  ResendVerificationEmail,
+  VerifyUser,
+} from './dtos/User.dto';
 import { ChildSignupFieldValidators } from 'src/utils/validators/fieldValidators';
 @Injectable()
 export class UserService {
@@ -22,8 +27,6 @@ export class UserService {
   ) {}
 
   async signupUser(createUserDto: CreateUsrDto) {
-    console.log('createUserDto', createUserDto);
-
     const userField: ChildSignupInterface = {
       email: createUserDto.email,
       username: createUserDto.username,
@@ -61,7 +64,17 @@ export class UserService {
     });
 
     if (newChild) {
-      const verificationLink = `http://localhost:3001/verify/${newChild._id}`;
+      const emailToken = this.jwtService.sign(
+        { id: newChild._id },
+        { secret: process.env.JWT_SECRET, expiresIn: '5M' },
+      );
+
+      await this.userModel.findByIdAndUpdate(newChild._id, {
+        verificationToken: emailToken,
+        tokenExpiry: new Date(Date.now() + 5 * 60 * 1000),
+      });
+
+      const verificationLink = `${process.env.FRONTEND_PROD_URL}/${newChild._id}/${emailToken}`;
       const mailOptions: EmailOptions = {
         to: newChild.email,
         subject: 'Just one step away!!',
@@ -124,31 +137,77 @@ export class UserService {
 
   async verifyUser(verifyUser: VerifyUser) {
     try {
-      const check = await this.userModel.findByIdAndUpdate(verifyUser.id, {
-        isVerified: true,
-      });
+      const findUser = await this.userModel.findById(verifyUser.id);
 
-      if (check) {
-        return {
-          message: 'User verified successfully',
-          check,
-        };
+      if (!findUser) {
+        throw new UnauthorizedException('User not found.');
       }
+
+      if (
+        !findUser.verificationToken ||
+        findUser.verificationToken !== verifyUser.verifyToken
+      ) {
+        throw new UnauthorizedException(
+          'Invalid or expired verification token.',
+        );
+      }
+
+      if (
+        !findUser.tokenExpiry ||
+        new Date(findUser.tokenExpiry) < new Date()
+      ) {
+        throw new UnauthorizedException(
+          'Verification token has expired. Please request a new one.',
+        );
+      }
+
+      const updatedUser = await this.userModel.findByIdAndUpdate(
+        verifyUser.id,
+        { isVerified: true, verificationToken: null, tokenExpiry: null },
+        { new: true },
+      );
+
+      if (!updatedUser) {
+        throw new UnauthorizedException(
+          'Failed to update user verification status.',
+        );
+      }
+
+      return {
+        message: 'User verified successfully.',
+        user: updatedUser,
+      };
     } catch (err) {
-      throw new UnauthorizedException();
+      throw new UnauthorizedException(err.message || 'Verification failed.');
     }
   }
 
-  async resendVerificationEmail(verifyUser: VerifyUser) {
+  async resendVerificationEmail(
+    ResendVerificationEmail: ResendVerificationEmail,
+  ) {
     try {
-      const findUser = await this.userModel.findById(verifyUser.id);
+      const findUser = await this.userModel.findById(
+        ResendVerificationEmail.id,
+      );
 
       if (findUser) {
+        const emailToken = this.jwtService.sign(
+          { id: findUser._id },
+          { secret: process.env.JWT_SECRET, expiresIn: '5M' },
+        );
+
+        await this.userModel.findByIdAndUpdate(findUser._id, {
+          verificationToken: emailToken,
+          tokenExpiry: new Date(Date.now() + 5 * 60 * 1000),
+        });
+
+        const verificationLink = `${process.env.FRONTEND_PROD_URL}/${findUser._id}/${emailToken}`;
         const mailOptions: EmailOptions = {
           to: findUser.email,
           subject: 'Just one step away!!',
-          body: 'Hey!! click on the below link to verify your email',
+          body: `Hey!! click on the this link to verify your account: ${verificationLink}`,
         };
+        this.emailService.sendMail(mailOptions);
         await this.emailService.sendMail(mailOptions);
 
         return {

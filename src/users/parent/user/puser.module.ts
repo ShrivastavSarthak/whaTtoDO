@@ -6,7 +6,7 @@ import { pUserService } from './puser.service';
 import { pUserController } from './puser.controller';
 import { User, UserSchema } from 'src/Schemas/cSchema/user.schema';
 import { MailerModule } from '@nestjs-modules/mailer';
-import { EmailService } from 'src/utils/email';
+import { EmailService } from 'src/utils/services/email';
 
 @Module({
   imports: [

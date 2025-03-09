@@ -5,8 +5,8 @@ import { User, UserSchema } from 'src/Schemas/cSchema/user.schema';
 import { pUser, pUserSchema } from 'src/Schemas/pSchema/pUser.schema';
 import { pTaskUserService } from './Ptask.service';
 import { pTaskController } from './Ptask.controller';
-import { CheckRelation } from 'src/middleware/relation.middleware';
-import { checkVerification } from 'src/middleware/verified.middleware';
+import { checkVerification } from 'src/utils/middleware/verified.middleware';
+import { CheckRelation } from 'src/utils/middleware/relation.middleware';
 
 @Module({
   imports: [

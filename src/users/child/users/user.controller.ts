@@ -5,14 +5,15 @@ import {
   Param,
   Post,
   UseGuards,
+  UseInterceptors,
   UsePipes,
   ValidationPipe
 } from '@nestjs/common';
 import { ApiBearerAuth, ApiTags } from '@nestjs/swagger';
-import { CreateUsrDto, LoginUserDto } from './dtos/User.dto';
+import { AuthGuard } from 'src/utils/guards/auth.guard';
+import { EmailVerifyInterceptor } from 'src/utils/interceptors/verify.interceptor';
+import { CreateUsrDto, LoginUserDto, VerifyUser } from './dtos/User.dto';
 import { UserService } from './user.service';
-import { AuthGuard } from 'src/auth/auth.guard';
-import { EmailVerifyGuard } from 'src/auth/emailVerify.guard';
 
 @ApiTags('child-auth')
 @Controller('user')
@@ -31,15 +32,16 @@ export class UserController {
     return this.userService.loginUser(loginUser);
   }
 
-  @UseGuards(AuthGuard)
-  @Get('/verified/:id')
-  @ApiBearerAuth('access-token')
-  verifyUser(@Param('id') id: string) {
-    return this.userService.verifyUser({ id });
+  // @UseGuards(AuthGuard)
+  @Post('/verify')
+  // @ApiBearerAuth('access-token')
+  verifyUser(@Body() verifyUser: VerifyUser) {
+
+    return this.userService.verifyUser(verifyUser);
   }
 
-  
-  @UseGuards(EmailVerifyGuard)
+  // @UseGuards(EmailVerifyGuard)
+  @UseInterceptors(EmailVerifyInterceptor)
   @ApiBearerAuth('access-token')
   @Get('/:id')
   @UsePipes(new ValidationPipe())
