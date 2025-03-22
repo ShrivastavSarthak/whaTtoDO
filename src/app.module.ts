@@ -1,13 +1,14 @@
 import { Module } from '@nestjs/common';
-import { MongooseModule } from '@nestjs/mongoose';
-import { UsersModule } from './users/child/users/user.module';
-import { TaskModule } from './users/child/task/task.module';
-import { pUserModule } from './users/parent/user/puser.module';
-import { AdminModule } from './users/admin/user/Auser.module';
-import { AdminTaskModule } from './users/admin/task/Atask.module';
-import { pTaskModule } from './users/parent/task/Ptask.module';
 import { ConfigModule } from '@nestjs/config';
+import { MongooseModule } from '@nestjs/mongoose';
 import { PaymentsModule } from './Payment/payments.module';
+import { AdminTaskModule } from './users/admin/task/Atask.module';
+import { AdminModule } from './users/admin/user/Auser.module';
+import { TaskModule } from './users/child/task/task.module';
+import { UsersModule } from './users/child/users/user.module';
+import { pTaskModule } from './users/parent/task/Ptask.module';
+import { pUserModule } from './users/parent/user/puser.module';
+import { EventsGateway } from './utils/events/events.gateway';
 
 @Module({
   imports: [
@@ -22,11 +23,11 @@ import { PaymentsModule } from './Payment/payments.module';
     pTaskModule,
     PaymentsModule,
     ConfigModule.forRoot({
-      envFilePath: '.env',
+      envFilePath: './env',
       isGlobal: true,
     }),
   ],
   controllers: [],
-  providers: [],
+  providers: [EventsGateway],
 })
 export class AppModule {}

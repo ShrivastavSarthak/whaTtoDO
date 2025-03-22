@@ -4,6 +4,7 @@ import { TaskService } from './task.service';
 import { TaskController } from './task.controller';
 import { User, UserSchema } from 'src/Schemas/cSchema/user.schema';
 import { Task, TaskSchema } from 'src/Schemas/cSchema/task.schema';
+import { pUser, pUserSchema } from 'src/Schemas/pSchema/pUser.schema';
 // import { pUser, pUserSchema } from 'src/Schemas/pSchema/pUser.schema';
 
 @Module({
@@ -17,10 +18,10 @@ import { Task, TaskSchema } from 'src/Schemas/cSchema/task.schema';
         name: User.name,
         schema: UserSchema,
       },
-    //   {
-    //     name: pUser.name,
-    //     schema: pUserSchema,
-    //   },
+      {
+        name: pUser.name,
+        schema: pUserSchema,
+      },
     ]),
   ],
   providers: [TaskService],
