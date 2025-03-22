@@ -18,12 +18,14 @@ import {
   VerifyUser,
 } from './dtos/User.dto';
 import { ChildSignupFieldValidators } from 'src/utils/validators/fieldValidators';
+import { EventsGateway } from 'src/utils/events/events.gateway';
 @Injectable()
 export class UserService {
   constructor(
     @InjectModel(User.name) private userModel: Model<User>,
     private jwtService: JwtService,
     private emailService: EmailService,
+    private eventGateway: EventsGateway,
   ) {}
 
   async signupUser(createUserDto: CreateUsrDto) {
@@ -64,6 +66,7 @@ export class UserService {
     });
 
     if (newChild) {
+      
       const emailToken = this.jwtService.sign(
         { id: newChild._id },
         { secret: process.env.JWT_SECRET, expiresIn: '5M' },
@@ -83,9 +86,11 @@ export class UserService {
       this.emailService.sendMail(mailOptions);
     }
 
+    const payload = { id: newChild._id, isVerified: newChild.isVerified };
     return {
       message: 'user created successfully',
-      newChild,
+      user_id: newChild._id,
+      access_token: await this.jwtService.signAsync(payload),
     };
   }
 
@@ -173,6 +178,8 @@ export class UserService {
         );
       }
 
+      this.eventGateway.notifyVerificationUpdate(verifyUser.id);
+
       return {
         message: 'User verified successfully.',
         user: updatedUser,
@@ -200,7 +207,7 @@ export class UserService {
           verificationToken: emailToken,
           tokenExpiry: new Date(Date.now() + 5 * 60 * 1000),
         });
-
+        
         const verificationLink = `${process.env.FRONTEND_PROD_URL}/${findUser._id}/${emailToken}`;
         const mailOptions: EmailOptions = {
           to: findUser.email,
