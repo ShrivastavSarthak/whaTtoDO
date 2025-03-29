@@ -1,4 +1,3 @@
-
 import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
 import mongoose from 'mongoose';
 import { gender, occupation } from 'src/shared/enum/parent.enum';
@@ -7,9 +6,6 @@ import { gender, occupation } from 'src/shared/enum/parent.enum';
 export class pUser {
   @Prop({ unique: false, required: true })
   name: string;
-
-  @Prop({required:true,default:false})
-  verified: boolean
 
   @Prop({ unique: true, required: true })
   username: string;
@@ -23,17 +19,14 @@ export class pUser {
   @Prop({ required: true })
   password: string;
 
-  @Prop()
-  created_at: Date;
-
-  @Prop()
-  updated_at: Date;
-
   @Prop({ required: true, type: String })
   gender: {
     type: string;
     enum: gender;
   };
+
+  @Prop({ default: false })
+  isVerified: boolean;
 
   @Prop({ required: true, type: String })
   occupation: {
@@ -42,6 +35,18 @@ export class pUser {
   };
   @Prop({ type: mongoose.Schema.Types.ObjectId, ref: 'User' })
   children: [];
+
+  @Prop()
+  verificationToken: string;
+
+  @Prop()
+  tokenExpiry: Date;
+
+  @Prop({ default: new Date() })
+  created_at: Date;
+
+  @Prop({ default: new Date() })
+  updated_at: Date;
 }
 
 export const pUserSchema = SchemaFactory.createForClass(pUser);

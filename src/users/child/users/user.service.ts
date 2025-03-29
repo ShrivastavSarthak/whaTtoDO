@@ -19,6 +19,7 @@ import {
 } from './dtos/User.dto';
 import { ChildSignupFieldValidators } from 'src/utils/validators/fieldValidators';
 import { EventsGateway } from 'src/utils/events/events.gateway';
+import { UserRoleEnum } from 'src/lib/enums/common.enums';
 @Injectable()
 export class UserService {
   constructor(
@@ -66,7 +67,6 @@ export class UserService {
     });
 
     if (newChild) {
-      
       const emailToken = this.jwtService.sign(
         { id: newChild._id },
         { secret: process.env.JWT_SECRET, expiresIn: '5M' },
@@ -77,7 +77,7 @@ export class UserService {
         tokenExpiry: new Date(Date.now() + 5 * 60 * 1000),
       });
 
-      const verificationLink = `${process.env.FRONTEND_PROD_URL}/${newChild._id}/${emailToken}`;
+      const verificationLink = `${process.env.FRONTEND_DEV_URL}/${newChild._id}/${emailToken}`;
       const mailOptions: EmailOptions = {
         to: newChild.email,
         subject: 'Just one step away!!',
@@ -90,13 +90,14 @@ export class UserService {
     return {
       message: 'user created successfully',
       user_id: newChild._id,
+      role: UserRoleEnum.CHILD,
       access_token: await this.jwtService.signAsync(payload),
     };
   }
 
   async loginUser(
     loginUser: LoginUserDto,
-  ): Promise<{ access_token: string; user_id: string }> {
+  ): Promise<{ access_token: string; user_id: string; role: string }> {
     const isEmail: any = await this.userModel.findOne({
       email: loginUser.username,
     });
@@ -117,6 +118,7 @@ export class UserService {
         return {
           access_token: await this.jwtService.signAsync(payload),
           user_id: isUser._id,
+          role: UserRoleEnum.CHILD,
         };
       } else {
         throw new UnauthorizedException('Invalid password or username');
@@ -207,8 +209,8 @@ export class UserService {
           verificationToken: emailToken,
           tokenExpiry: new Date(Date.now() + 5 * 60 * 1000),
         });
-        
-        const verificationLink = `${process.env.FRONTEND_PROD_URL}/${findUser._id}/${emailToken}`;
+
+        const verificationLink = `${process.env.FRONTEND_DEV_URL}/${findUser._id}/${emailToken}`;
         const mailOptions: EmailOptions = {
           to: findUser.email,
           subject: 'Just one step away!!',

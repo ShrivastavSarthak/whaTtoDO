@@ -41,7 +41,7 @@ export class CreatePatentDto {
   @ApiProperty({
     enum: occupation,
     description: 'This is important',
-    example: occupation.GOVERNMENT_EMPLOYEE
+    example: occupation.GOVERNMENT_EMPLOYEE,
   })
   occupation: occupation;
 }
@@ -70,6 +70,20 @@ export class AddChild {
 }
 
 export class VerifyUser {
+  @ApiProperty({
+    type: String,
+    description: 'This is important',
+  })
+  id: string;
+
+  @ApiProperty({
+    type: String,
+    description: 'This is important',
+  })
+  verifyToken: string;
+}
+
+export class ResendVerificationEmail {
   @ApiProperty({
     type: String,
     description: 'This is important',
