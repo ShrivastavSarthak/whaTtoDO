@@ -11,6 +11,7 @@ import {
   AddChild,
   CreatePatentDto,
   LoginUserDto,
+  ResendVerificationEmail,
   VerifyUser,
 } from './dto/Puser.dto';
 import { User } from 'src/Schemas/cSchema/user.schema';
@@ -18,6 +19,9 @@ import bcrypt from 'bcryptjs';
 import { EmailService } from 'src/utils/services/email';
 import { EmailOptions } from 'src/type';
 import { ParentSignupFieldValidators } from 'src/utils/validators/fieldValidators';
+import { EventsGateway } from 'src/utils/events/events.gateway';
+import { ConfigService } from '@nestjs/config';
+import { UserRoleEnum } from 'src/lib/enums/common.enums';
 
 @Injectable()
 export class pUserService {
@@ -26,6 +30,8 @@ export class pUserService {
     @InjectModel(User.name) private userModel: Model<User>,
     private jwtService: JwtService,
     private emailService: EmailService,
+    private eventGateway: EventsGateway,
+    private configService: ConfigService,
   ) {}
 
   async signupParent(createParentDto: CreatePatentDto) {
@@ -43,13 +49,17 @@ export class pUserService {
       return;
     }
 
-    const isUserExist = await this.pUserModel.find({
-      $or: [
-        { email: createParentDto.email },
-        { phoneNo: createParentDto.phoneNo },
-        { username: createParentDto.username },
-      ],
-    });
+    const isUserExist = await this.pUserModel.aggregate([
+      {
+        $match: {
+          $or: [
+            { email: createParentDto.email },
+            { phoneNo: createParentDto.phoneNo },
+            { username: createParentDto.username },
+          ],
+        },
+      },
+    ]);
 
     if (isUserExist.length > 0) {
       throw new BadRequestException('User already exist');
@@ -69,23 +79,37 @@ export class pUserService {
     });
 
     if (newParent) {
+      const emailToken = this.jwtService.sign(
+        { id: newParent._id },
+        { secret: process.env.JWT_SECRET, expiresIn: '5M' },
+      );
+
+      await this.pUserModel.findByIdAndUpdate(newParent._id, {
+        verificationToken: emailToken,
+        tokenExpiry: new Date(Date.now() + 5 * 60 * 1000),
+      });
+
+      const verificationLink = `${process.env.FRONTEND_DEV_URL}/${newParent._id}/${emailToken}`;
       const mailOptions: EmailOptions = {
         to: newParent.email,
-        subject: 'One step away!!',
-        body: 'Hey!! click on the below link to verify your email',
+        subject: 'Just one step away!!',
+        body: `Hey!! click on the this link to verify your account: ${verificationLink}`,
       };
       this.emailService.sendMail(mailOptions);
     }
 
+    const payload = { id: newParent._id, isVerified: newParent.isVerified };
     return {
-      message: 'parent created successfully',
-      newParent,
+      message: 'user created successfully',
+      user_id: newParent._id,
+      role: UserRoleEnum.PARENT,
+      access_token: await this.jwtService.signAsync(payload),
     };
   }
 
   async loginParent(
     loginUser: LoginUserDto,
-  ): Promise<{ access_token: string; user_id: any }> {
+  ): Promise<{ access_token: string; user_id: any, role: string }> {
     try {
       const isParent = await this.pUserModel.findOne({
         $or: [{ username: loginUser.username }, { email: loginUser.username }],
@@ -105,6 +129,7 @@ export class pUserService {
         return {
           access_token: await this.jwtService.signAsync(payload),
           user_id: isParent._id,
+          role: UserRoleEnum.PARENT,
         };
       }
     } catch (error) {
@@ -178,31 +203,79 @@ export class pUserService {
 
   async verifyUser(verifyUser: VerifyUser) {
     try {
-      const check = await this.pUserModel.findByIdAndUpdate(verifyUser.id, {
-        verified: true,
-      });
+      const findUser = await this.pUserModel.findById(verifyUser.id);
 
-      if (check) {
-        return {
-          message: 'User verified successfully',
-          check,
-        };
+      if (!findUser) {
+        throw new UnauthorizedException('User not found.');
       }
+
+      if (
+        !findUser.verificationToken ||
+        findUser.verificationToken !== verifyUser.verifyToken
+      ) {
+        throw new UnauthorizedException(
+          'Invalid or expired verification token.',
+        );
+      }
+
+      if (
+        !findUser.tokenExpiry ||
+        new Date(findUser.tokenExpiry) < new Date()
+      ) {
+        throw new UnauthorizedException(
+          'Verification token has expired. Please request a new one.',
+        );
+      }
+
+      const updatedUser = await this.userModel.findByIdAndUpdate(
+        verifyUser.id,
+        { isVerified: true, verificationToken: null, tokenExpiry: null },
+        { new: true },
+      );
+
+      if (!updatedUser) {
+        throw new UnauthorizedException(
+          'Failed to update user verification status.',
+        );
+      }
+
+      this.eventGateway.notifyVerificationUpdate(verifyUser.id);
+
+      return {
+        message: 'User verified successfully.',
+        user: updatedUser,
+      };
     } catch (err) {
       throw new UnauthorizedException();
     }
   }
 
-  async resendVerificationEmail(verifyUser: VerifyUser) {
+  async resendVerificationEmail(
+    ResendVerificationEmail: ResendVerificationEmail,
+  ) {
     try {
-      const findUser = await this.pUserModel.findById(verifyUser.id);
+      const findUser = await this.pUserModel.findById(
+        ResendVerificationEmail.id,
+      );
 
       if (findUser) {
+        const emailToken = this.jwtService.sign(
+          { id: findUser._id },
+          { secret: process.env.JWT_SECRET, expiresIn: '5M' },
+        );
+
+        await this.pUserModel.findByIdAndUpdate(findUser._id, {
+          verificationToken: emailToken,
+          tokenExpiry: new Date(Date.now() + 5 * 60 * 1000),
+        });
+
+        const verificationLink = `${process.env.FRONTEND_DEV_URL}/${findUser._id}/${emailToken}`;
         const mailOptions: EmailOptions = {
           to: findUser.email,
           subject: 'Just one step away!!',
-          body: 'Hey!! click on the below link to verify your email',
+          body: `Hey!! click on the this link to verify your account: ${verificationLink}`,
         };
+        this.emailService.sendMail(mailOptions);
         await this.emailService.sendMail(mailOptions);
 
         return {

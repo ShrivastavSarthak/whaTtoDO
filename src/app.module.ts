@@ -12,9 +12,11 @@ import { EventsGateway } from './utils/events/events.gateway';
 
 @Module({
   imports: [
-    MongooseModule.forRoot(
-      'mongodb+srv://sarthak:sarthak@cluster0.yftq0jg.mongodb.net/',
-    ),
+    ConfigModule.forRoot({
+      envFilePath: '.env', 
+      isGlobal: true, 
+    }),
+    MongooseModule.forRoot(process.env.DB_URL),
     UsersModule,
     TaskModule,
     pUserModule,
@@ -22,10 +24,6 @@ import { EventsGateway } from './utils/events/events.gateway';
     AdminTaskModule,
     pTaskModule,
     PaymentsModule,
-    ConfigModule.forRoot({
-      envFilePath: './env',
-      isGlobal: true,
-    }),
   ],
   controllers: [],
   providers: [EventsGateway],

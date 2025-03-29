@@ -7,6 +7,7 @@ import { pUserController } from './puser.controller';
 import { User, UserSchema } from 'src/Schemas/cSchema/user.schema';
 import { MailerModule } from '@nestjs-modules/mailer';
 import { EmailService } from 'src/utils/services/email';
+import { EventsGateway } from 'src/utils/events/events.gateway';
 
 @Module({
   imports: [
@@ -27,7 +28,7 @@ import { EmailService } from 'src/utils/services/email';
     }),
     MailerModule.forRoot({
       transport: {
-        service:"gmail",
+        service: 'gmail',
         host: 'sandbox.smtp.mailtrap.io',
         port: 2525,
         auth: {
@@ -37,7 +38,7 @@ import { EmailService } from 'src/utils/services/email';
       },
     }),
   ],
-  providers: [pUserService, EmailService],
+  providers: [pUserService, EmailService, EventsGateway],
   controllers: [pUserController],
 })
 export class pUserModule {}

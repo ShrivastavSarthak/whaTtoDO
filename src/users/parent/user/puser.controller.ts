@@ -9,7 +9,7 @@ import {
   ValidationPipe,
 } from '@nestjs/common';
 import { AuthGuard } from 'src/utils/guards/auth.guard';
-import { AddChild, CreatePatentDto, LoginUserDto } from './dto/Puser.dto';
+import { AddChild, CreatePatentDto, LoginUserDto, VerifyUser } from './dto/Puser.dto';
 // eslint-disable-next-line @typescript-eslint/no-unused-vars
 import { pUserService } from './puser.service';
 import { ApiBearerAuth, ApiTags } from '@nestjs/swagger';
@@ -39,9 +39,9 @@ export class pUserController {
     return this.pUserService.addChildren(addchild);
   }
 
-  @Get('/verified/:id')
-  verifyUser(@Param('id') id: string) {
-    return this.pUserService.verifyUser({ id });
+  @Get('/verify')
+  verifyUser(@Body() verifyUser: VerifyUser) {
+    return this.pUserService.verifyUser(verifyUser);
   }
 
   @Get('/resend-verification-mail/:id')
