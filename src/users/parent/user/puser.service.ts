@@ -3,25 +3,24 @@ import {
   Injectable,
   UnauthorizedException,
 } from '@nestjs/common';
+import { ConfigService } from '@nestjs/config';
 import { JwtService } from '@nestjs/jwt';
 import { InjectModel } from '@nestjs/mongoose';
+import bcrypt from 'bcryptjs';
 import { Model } from 'mongoose';
+import { UserRoleEnum } from 'src/lib/enums/common.enums';
+import { User } from 'src/Schemas/cSchema/user.schema';
 import { pUser } from 'src/Schemas/pSchema/pUser.schema';
+import { EmailOptions } from 'src/type';
+import { EventsGateway } from 'src/utils/events/events.gateway';
+import { EmailService } from 'src/utils/services/email';
+import { ParentSignupFieldValidators } from 'src/utils/validators/fieldValidators';
 import {
   AddChild,
   CreatePatentDto,
   LoginUserDto,
-  ResendVerificationEmail,
-  VerifyUser,
+  ResendVerificationEmail
 } from './dto/Puser.dto';
-import { User } from 'src/Schemas/cSchema/user.schema';
-import bcrypt from 'bcryptjs';
-import { EmailService } from 'src/utils/services/email';
-import { EmailOptions } from 'src/type';
-import { ParentSignupFieldValidators } from 'src/utils/validators/fieldValidators';
-import { EventsGateway } from 'src/utils/events/events.gateway';
-import { ConfigService } from '@nestjs/config';
-import { UserRoleEnum } from 'src/lib/enums/common.enums';
 
 @Injectable()
 export class pUserService {
@@ -201,52 +200,19 @@ export class pUserService {
     }
   }
 
-  async verifyUser(verifyUser: VerifyUser) {
+  async getParentById(id:string){
     try {
-      const findUser = await this.pUserModel.findById(verifyUser.id);
-
-      if (!findUser) {
+      const getParent = await this.pUserModel.findById(id).select('-password');
+      if (!getParent) {
         throw new UnauthorizedException('User not found.');
       }
-
-      if (
-        !findUser.verificationToken ||
-        findUser.verificationToken !== verifyUser.verifyToken
-      ) {
-        throw new UnauthorizedException(
-          'Invalid or expired verification token.',
-        );
-      }
-
-      if (
-        !findUser.tokenExpiry ||
-        new Date(findUser.tokenExpiry) < new Date()
-      ) {
-        throw new UnauthorizedException(
-          'Verification token has expired. Please request a new one.',
-        );
-      }
-
-      const updatedUser = await this.userModel.findByIdAndUpdate(
-        verifyUser.id,
-        { isVerified: true, verificationToken: null, tokenExpiry: null },
-        { new: true },
-      );
-
-      if (!updatedUser) {
-        throw new UnauthorizedException(
-          'Failed to update user verification status.',
-        );
-      }
-
-      this.eventGateway.notifyVerificationUpdate(verifyUser.id);
-
       return {
-        message: 'User verified successfully.',
-        user: updatedUser,
+        message: 'User fetched successfully',
+        user: getParent,
       };
-    } catch (err) {
-      throw new UnauthorizedException();
+    } catch (error) {
+      throw new UnauthorizedException('User not found.');
+      
     }
   }
 

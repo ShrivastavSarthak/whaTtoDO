@@ -7,19 +7,18 @@ import { JwtService } from '@nestjs/jwt';
 import { InjectModel } from '@nestjs/mongoose';
 import bcrypt from 'bcryptjs';
 import { Model } from 'mongoose';
+import { UserRoleEnum } from 'src/lib/enums/common.enums';
 import { User } from 'src/Schemas/cSchema/user.schema';
 import { ChildSignupInterface } from 'src/shared/interface/user-types';
 import { EmailOptions } from 'src/type';
+import { EventsGateway } from 'src/utils/events/events.gateway';
 import { EmailService } from 'src/utils/services/email';
+import { ChildSignupFieldValidators } from 'src/utils/validators/fieldValidators';
 import {
   CreateUsrDto,
   LoginUserDto,
-  ResendVerificationEmail,
-  VerifyUser,
+  ResendVerificationEmail
 } from './dtos/User.dto';
-import { ChildSignupFieldValidators } from 'src/utils/validators/fieldValidators';
-import { EventsGateway } from 'src/utils/events/events.gateway';
-import { UserRoleEnum } from 'src/lib/enums/common.enums';
 @Injectable()
 export class UserService {
   constructor(
@@ -142,54 +141,6 @@ export class UserService {
     }
   }
 
-  async verifyUser(verifyUser: VerifyUser) {
-    try {
-      const findUser = await this.userModel.findById(verifyUser.id);
-
-      if (!findUser) {
-        throw new UnauthorizedException('User not found.');
-      }
-
-      if (
-        !findUser.verificationToken ||
-        findUser.verificationToken !== verifyUser.verifyToken
-      ) {
-        throw new UnauthorizedException(
-          'Invalid or expired verification token.',
-        );
-      }
-
-      if (
-        !findUser.tokenExpiry ||
-        new Date(findUser.tokenExpiry) < new Date()
-      ) {
-        throw new UnauthorizedException(
-          'Verification token has expired. Please request a new one.',
-        );
-      }
-
-      const updatedUser = await this.userModel.findByIdAndUpdate(
-        verifyUser.id,
-        { isVerified: true, verificationToken: null, tokenExpiry: null },
-        { new: true },
-      );
-
-      if (!updatedUser) {
-        throw new UnauthorizedException(
-          'Failed to update user verification status.',
-        );
-      }
-
-      this.eventGateway.notifyVerificationUpdate(verifyUser.id);
-
-      return {
-        message: 'User verified successfully.',
-        user: updatedUser,
-      };
-    } catch (err) {
-      throw new UnauthorizedException(err.message || 'Verification failed.');
-    }
-  }
 
   async resendVerificationEmail(
     ResendVerificationEmail: ResendVerificationEmail,

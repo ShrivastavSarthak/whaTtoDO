@@ -12,11 +12,11 @@ import {
 import { ApiBearerAuth, ApiTags } from '@nestjs/swagger';
 import { AuthGuard } from 'src/utils/guards/auth.guard';
 import { EmailVerifyInterceptor } from 'src/utils/interceptors/verify.interceptor';
-import { CreateUsrDto, LoginUserDto, VerifyUser } from './dtos/User.dto';
+import { CreateUsrDto, LoginUserDto } from './dtos/User.dto';
 import { UserService } from './user.service';
 
 @ApiTags('child-auth')
-@Controller('user')
+@Controller('child')
 export class UserController {
   constructor(private userService: UserService) {}
 
@@ -30,14 +30,6 @@ export class UserController {
   @UsePipes(new ValidationPipe())
   LoginUser(@Body() loginUser: LoginUserDto) {
     return this.userService.loginUser(loginUser);
-  }
-
-  // @UseGuards(AuthGuard)
-  @Post('/verify')
-  // @ApiBearerAuth('access-token')
-  verifyUser(@Body() verifyUser: VerifyUser) {
-
-    return this.userService.verifyUser(verifyUser);
   }
 
   // @UseGuards(EmailVerifyGuard)
