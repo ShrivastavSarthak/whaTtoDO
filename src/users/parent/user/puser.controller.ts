@@ -5,14 +5,16 @@ import {
   Param,
   Post,
   UseGuards,
+  UseInterceptors,
   UsePipes,
   ValidationPipe,
 } from '@nestjs/common';
 import { AuthGuard } from 'src/utils/guards/auth.guard';
-import { AddChild, CreatePatentDto, LoginUserDto, VerifyUser } from './dto/Puser.dto';
+import { AddChild, CreatePatentDto, LoginUserDto } from './dto/Puser.dto';
 // eslint-disable-next-line @typescript-eslint/no-unused-vars
-import { pUserService } from './puser.service';
 import { ApiBearerAuth, ApiTags } from '@nestjs/swagger';
+import { EmailVerifyInterceptor } from 'src/utils/interceptors/verify.interceptor';
+import { pUserService } from './puser.service';
 
 @ApiTags('parent-auth')
 @Controller('pUser')
@@ -39,9 +41,10 @@ export class pUserController {
     return this.pUserService.addChildren(addchild);
   }
 
-  @Get('/verify')
-  verifyUser(@Body() verifyUser: VerifyUser) {
-    return this.pUserService.verifyUser(verifyUser);
+  @UseInterceptors(EmailVerifyInterceptor)
+  @Get('/:id')
+  getParentById(@Param('id') id: string) {
+    return this.pUserService.getParentById(id);
   }
 
   @Get('/resend-verification-mail/:id')

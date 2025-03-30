@@ -9,6 +9,7 @@ import { UsersModule } from './users/child/users/user.module';
 import { pTaskModule } from './users/parent/task/Ptask.module';
 import { pUserModule } from './users/parent/user/puser.module';
 import { EventsGateway } from './utils/events/events.gateway';
+import { commonUserModule } from './users/common_user/common_user/common_user.module';
 
 @Module({
   imports: [
@@ -20,9 +21,10 @@ import { EventsGateway } from './utils/events/events.gateway';
     UsersModule,
     TaskModule,
     pUserModule,
+    pTaskModule,
+    commonUserModule,
     AdminModule,
     AdminTaskModule,
-    pTaskModule,
     PaymentsModule,
   ],
   controllers: [],
