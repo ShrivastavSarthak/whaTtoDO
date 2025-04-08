@@ -6,6 +6,7 @@ import {
   Param,
   Patch,
   Post,
+  Query,
   UseGuards,
   UseInterceptors,
   UsePipes,
@@ -24,6 +25,17 @@ export class TaskController {
   constructor(private taskService: TaskService) {}
 
   @UseGuards(AuthGuard)
+  @Get('/get_all_tasks/:id')
+  getAllTasks(
+    @Param('id') id: string,
+    @Query('pageSize') pageSize: number,
+    @Query('pageNo') pageNo: number,
+  ) {
+    const taskData = { id: id, pageSize: pageSize, pageNo: pageNo };
+    return this.taskService.getAllTasks(taskData);
+  }
+
+  @UseGuards(AuthGuard)
   @ApiConsumes('multipart/form-data')
   @ApiBody({ type: CreateTaskDto })
   @UseInterceptors(FileInterceptor('media'))
@@ -33,10 +45,11 @@ export class TaskController {
     return this.taskService.createTask(createTask);
   }
 
+  
   @UseGuards(AuthGuard)
-  @Get('/get_task/:id')
-  getTask(@Param('id') id: string) {
-    return this.taskService.getUserTask(id);
+  @Get('/get_task/:task_id')
+  getTask(@Param('task_id') task_id: string) {
+    return this.taskService.getUserTask(task_id);
   }
   @UseGuards(AuthGuard)
   @ApiBody({ type: DeleteTaskDto })

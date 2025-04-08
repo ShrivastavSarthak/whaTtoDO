@@ -2,7 +2,7 @@ import { BadRequestException } from '@nestjs/common';
 import {
   ChildSignupInterface,
   ParentSignupInterface,
-} from 'src/shared/interface/user-types';
+} from 'src/shared/interface/user-interface';
 
 export const ChildSignupFieldValidators = (fields: ChildSignupInterface) => {
   if (fields.phoneNo.length !== 10) {
