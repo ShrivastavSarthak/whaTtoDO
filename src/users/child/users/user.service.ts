@@ -9,7 +9,7 @@ import bcrypt from 'bcryptjs';
 import { Model } from 'mongoose';
 import { UserRoleEnum } from 'src/lib/enums/common.enums';
 import { User } from 'src/Schemas/cSchema/user.schema';
-import { ChildSignupInterface } from 'src/shared/interface/user-types';
+import { ChildSignupInterface } from 'src/shared/interface/user-interface';
 import { EmailOptions } from 'src/type';
 import { EventsGateway } from 'src/utils/events/events.gateway';
 import { EmailService } from 'src/utils/services/email';

@@ -5,6 +5,7 @@ import { Task } from 'src/Schemas/cSchema/task.schema';
 import { User } from 'src/Schemas/cSchema/user.schema';
 import { pUser } from 'src/Schemas/pSchema/pUser.schema';
 import { CreateTaskDto, DeleteTaskDto } from './dtos/Task.dto';
+import { GetOptions } from 'src/shared/interface/global-interface';
 
 @Injectable()
 export class TaskService {
@@ -13,6 +14,36 @@ export class TaskService {
     @InjectModel(User.name) private userModel: Model<User>,
     @InjectModel(pUser.name) private parentModel: Model<pUser>,
   ) {}
+
+  async getAllTasks(taskData: GetOptions) {
+    const { id, pageSize, pageNo } = taskData;
+
+    const skip = pageNo ? (pageNo - 1) * pageSize : 0;
+    const limit = pageSize ? pageSize : 10;
+    const userExists = await this.userModel.findById(id);
+    if (!userExists) {
+      return { message: 'User not found' };
+    }
+    const getAllTask = await this.taskModel
+      .aggregate([
+        {
+          $match: { created_by: id, isDeleted: false },
+        },
+        {
+          $skip: skip,
+        },
+        {
+          $limit: limit,
+        },
+      ])
+      .sort({ created_at: -1 });
+
+    if (!getAllTask) {
+      return { message: 'No tasks found' };
+    }
+
+    return { message: 'Task fetch successfully', tasks: getAllTask };
+  }
 
   async createTask(createTaskDto: CreateTaskDto) {
     try {
@@ -52,8 +83,6 @@ export class TaskService {
       if (!userExists) {
         return { message: 'User not found' };
       }
-;
-
       const tasks = await this.taskModel.find({ created_by: id });
       return tasks;
     } catch (error) {
