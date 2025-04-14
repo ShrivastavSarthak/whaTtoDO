@@ -53,6 +53,31 @@ export class pTaskUserService {
     }
   }
 
+
+  async readAllChildTaskByParent(homeId:string){
+    try {
+      
+      const findAllTask = await this.taskModel.find({homeId:homeId});
+
+      if(!findAllTask) {
+        return {
+          message: 'Task not found',
+          status: '404',
+        };
+      }
+      return {
+        message: 'Task fetched successfully',
+        status: '200',
+        findAllTask,
+      };
+
+    } catch (error) {
+      throw new Error(error);
+      
+    }
+  }
+
+
   async deleteTaskByParent(deleteParentTaskDto: DeleteParentTaskDto) {
     try {
       const checkDelete = await this.taskModel.findOneAndDelete({

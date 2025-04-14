@@ -34,11 +34,11 @@ export class pUserController {
   }
 
   @UseGuards(AuthGuard)
-  @ApiBearerAuth('api/v1/access-token')
+  @ApiBearerAuth('access-token')
   @Post('/add-child')
   @UsePipes(new ValidationPipe())
-  addChildren(@Body() addchild: AddChild) {
-    return this.ParentUserService.addChildren(addchild);
+  addChildren(@Body() addChild: AddChild) {
+    return this.ParentUserService.addChildren(addChild);
   }
 
   @UseInterceptors(EmailVerifyInterceptor)
