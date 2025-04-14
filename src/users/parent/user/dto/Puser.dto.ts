@@ -66,6 +66,10 @@ export class AddChild {
     description: 'This is important',
   })
   childUsername: string;
+  @ApiProperty({
+    type: String,
+    description: 'This is important',
+  })
   parentId: string;
 }
 

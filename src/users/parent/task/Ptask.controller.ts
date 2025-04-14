@@ -42,6 +42,14 @@ export class pTaskController {
   }
 
   @UseGuards(AuthGuard)
+  @Get('/read-Task-by-parent/:homeId')
+  @UsePipes(new ValidationPipe())
+  readAllChildTaskByParent(@Param('homeId') homeId: string) {
+    return this.pTaskService.readAllChildTaskByParent(homeId);
+  }
+
+
+  @UseGuards(AuthGuard)
   @Delete('/delete-Task-by-parent')
   @UsePipes(new ValidationPipe())
   deleteTaskByParent(@Body() deleteTaskByParent: DeleteParentTaskDto) {
@@ -54,4 +62,7 @@ export class pTaskController {
   updateTaskByParent(@Body() updateTaskByParent: UpdateParentTaskDto) {
     return this.pTaskService.updateTaskByParent(updateTaskByParent);
   }
+
+
+  
 }
