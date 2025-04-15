@@ -50,7 +50,7 @@ export class pUser {
   updated_at: Date;
 
   @Prop({required: true, default:()=> randomUUID()})
-  accId: string;
+  homeId: string;
 }
 
 export const pUserSchema = SchemaFactory.createForClass(pUser);
