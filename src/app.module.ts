@@ -10,6 +10,7 @@ import { pTaskModule } from './users/parent/task/Ptask.module';
 import { pUserModule } from './users/parent/user/puser.module';
 import { EventsGateway } from './utils/events/events.gateway';
 import { commonUserModule } from './users/common_user/common_user/common_user.module';
+import { HomeModule } from './home/home.module';
 
 @Module({
   imports: [
@@ -24,6 +25,7 @@ import { commonUserModule } from './users/common_user/common_user/common_user.mo
     pTaskModule,
     commonUserModule,
     AdminModule,
+    HomeModule,
     AdminTaskModule,
     PaymentsModule,
   ],

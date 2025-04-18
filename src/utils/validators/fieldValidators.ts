@@ -1,4 +1,5 @@
 import { BadRequestException } from '@nestjs/common';
+import { HomeInterface } from 'src/shared/interface/home-interface';
 import {
   ChildSignupInterface,
   ParentSignupInterface,
@@ -54,5 +55,20 @@ export const ParentSignupFieldValidators = (field: ParentSignupInterface) => {
       'Occupation should be of minimum 3 characters or greater',
     );
   }
+  return true;
+};
+
+export const HomeFieldValidators = (field: HomeInterface) => {
+  if (field.homeName.length < 3) {
+    throw new BadRequestException(
+      'Home name should be of minimum 3 characters',
+    );
+  }
+  if (field.homeDesc.length < 10) {
+    throw new BadRequestException(
+      'Home address should be of minimum 5 characters',
+    );
+  }
+
   return true;
 };
