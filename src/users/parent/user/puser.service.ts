@@ -19,7 +19,7 @@ import {
   AddChild,
   CreatePatentDto,
   LoginUserDto,
-  ResendVerificationEmail
+  ResendVerificationEmail,
 } from './dto/Puser.dto';
 
 @Injectable()
@@ -102,13 +102,17 @@ export class pUserService {
       message: 'user created successfully',
       user_id: newParent._id,
       role: UserRoleEnum.PARENT,
+      homeId: newParent.homeId,
       access_token: await this.jwtService.signAsync(payload),
     };
   }
 
-  async loginParent(
-    loginUser: LoginUserDto,
-  ): Promise<{ access_token: string; user_id: any, role: string }> {
+  async loginParent(loginUser: LoginUserDto): Promise<{
+    access_token: string;
+    user_id: any;
+    role: string;
+    homeId: string;
+  }> {
     try {
       const isParent = await this.pUserModel.findOne({
         $or: [{ username: loginUser.username }, { email: loginUser.username }],
@@ -128,6 +132,7 @@ export class pUserService {
         return {
           access_token: await this.jwtService.signAsync(payload),
           user_id: isParent._id,
+          homeId: isParent.homeId,
           role: UserRoleEnum.PARENT,
         };
       }
@@ -200,7 +205,7 @@ export class pUserService {
     }
   }
 
-  async getParentById(id:string){
+  async getParentById(id: string) {
     try {
       const getParent = await this.pUserModel.findById(id).select('-password');
       if (!getParent) {
@@ -212,7 +217,6 @@ export class pUserService {
       };
     } catch (error) {
       throw new UnauthorizedException('User not found.');
-      
     }
   }
 

@@ -1,5 +1,4 @@
 import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
-import { randomUUID } from 'crypto';
 import mongoose from 'mongoose';
 import { gender, occupation } from 'src/shared/enum/parent.enum';
 
@@ -49,7 +48,7 @@ export class pUser {
   @Prop({ default: new Date() })
   updated_at: Date;
 
-  @Prop({required: true, default:()=> randomUUID()})
+  @Prop({ default: '' })
   homeId: string;
 }
 
