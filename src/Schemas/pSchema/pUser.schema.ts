@@ -48,7 +48,7 @@ export class pUser {
   @Prop({ default: new Date() })
   updated_at: Date;
 
-  @Prop({ default: '' })
+  @Prop({ type: mongoose.Schema.Types.ObjectId, ref: 'home', default: null })
   homeId: string;
 }
 
