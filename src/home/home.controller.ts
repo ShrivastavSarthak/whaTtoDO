@@ -1,6 +1,8 @@
 import {
   Body,
   Controller,
+  Get,
+  Param,
   Post,
   UsePipes,
   ValidationPipe,
@@ -18,5 +20,10 @@ export class HomeController {
   @UsePipes(new ValidationPipe())
   createHome(@Body() createHomeDto: CreateHomeDto) {
     return this.homesService.createHome(createHomeDto);
+  }
+
+  @Get('/get-home/:id')
+  async getHomeByLeaderId(@Param('id') id: string) {
+    return this.homesService.getHomeByLeaderId(id);
   }
 }

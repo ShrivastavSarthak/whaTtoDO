@@ -2,7 +2,7 @@ import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
 import mongoose from 'mongoose';
 
 @Schema()
-export class homeSchema {
+export class home {
   @Prop({ required: true, type: mongoose.Schema.Types.ObjectId, ref: 'pUser' })
   leader: string;
 
@@ -28,4 +28,4 @@ export class homeSchema {
   updated_at: Date;
 }
 
-export const HomeSchema = SchemaFactory.createForClass(homeSchema);
+export const HomeSchema = SchemaFactory.createForClass(home);
