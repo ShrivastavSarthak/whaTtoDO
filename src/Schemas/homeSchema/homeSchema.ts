@@ -15,10 +15,10 @@ export class home {
   @Prop()
   homePhoto: string;
 
-  @Prop({ type: mongoose.Schema.Types.ObjectId, ref: 'pUser' })
+  @Prop({ type: mongoose.Schema.Types.ObjectId, ref: 'pUser', default: null })
   coLeader: string;
 
-  @Prop({ type: mongoose.Schema.Types.ObjectId, ref: 'User' })
+  @Prop({ type: mongoose.Schema.Types.ObjectId, ref: 'User', default: null })
   members: [];
 
   @Prop({ default: new Date() })
