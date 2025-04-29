@@ -21,7 +21,7 @@ import { AuthGuard } from 'src/utils/guards/auth.guard';
 import { ApiBearerAuth, ApiTags } from '@nestjs/swagger';
 
 @ApiTags('parent-task')
-@Controller('ptask')
+@Controller('api/v1/ptask')
 @ApiBearerAuth('access-token')
 export class pTaskController {
   constructor(private pTaskService: pTaskUserService) {}
@@ -48,7 +48,6 @@ export class pTaskController {
     return this.pTaskService.readAllChildTaskByParent(homeId);
   }
 
-
   @UseGuards(AuthGuard)
   @Delete('/delete-Task-by-parent')
   @UsePipes(new ValidationPipe())
@@ -62,7 +61,4 @@ export class pTaskController {
   updateTaskByParent(@Body() updateTaskByParent: UpdateParentTaskDto) {
     return this.pTaskService.updateTaskByParent(updateTaskByParent);
   }
-
-
-  
 }

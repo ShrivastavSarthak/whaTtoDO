@@ -16,7 +16,7 @@ import { CreateUsrDto, LoginUserDto } from './dtos/User.dto';
 import { UserService } from './user.service';
 
 @ApiTags('child-auth')
-@Controller('child')
+@Controller('api/v1/child')
 export class UserController {
   constructor(private userService: UserService) {}
 

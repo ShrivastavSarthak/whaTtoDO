@@ -6,3 +6,4 @@ export interface GetOptions{
     pageNo: number;
     search?: string;
 }
+
