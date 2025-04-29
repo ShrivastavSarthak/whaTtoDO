@@ -94,3 +94,18 @@ export class ResendVerificationEmail {
   })
   id: string;
 }
+
+
+export class ParentInvite {
+  @ApiProperty({
+    type: String,
+    description: 'This is important',
+  })
+  email: string;
+
+  @ApiProperty({
+    type: String,
+    description: 'This is important',
+  })
+  homeId: string;
+}

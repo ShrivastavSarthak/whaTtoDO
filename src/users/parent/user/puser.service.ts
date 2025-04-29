@@ -8,7 +8,10 @@ import { JwtService } from '@nestjs/jwt';
 import { InjectModel } from '@nestjs/mongoose';
 import bcrypt from 'bcryptjs';
 import { Model } from 'mongoose';
-import { UserRoleEnum } from 'src/lib/enums/common.enums';
+import {
+  UserRoleEnum,
+  UserRoleHierarchyEnum,
+} from 'src/lib/enums/common.enums';
 import { User } from 'src/Schemas/cSchema/user.schema';
 import { pUser } from 'src/Schemas/pSchema/pUser.schema';
 import { EmailOptions } from 'src/type';
@@ -19,13 +22,16 @@ import {
   AddChild,
   CreatePatentDto,
   LoginUserDto,
+  ParentInvite,
   ResendVerificationEmail,
 } from './dto/Puser.dto';
+import { invite } from 'src/Schemas/inviteSchema/inviteSchema';
 
 @Injectable()
 export class pUserService {
   constructor(
     @InjectModel(pUser.name) private pUserModel: Model<pUser>,
+    @InjectModel(invite.name) private InviteSchema: Model<invite>,
     @InjectModel(User.name) private userModel: Model<User>,
     private jwtService: JwtService,
     private emailService: EmailService,
@@ -259,6 +265,56 @@ export class pUserService {
       };
     } catch (error) {
       throw new UnauthorizedException();
+    }
+  }
+
+  async sendParentInvite(parentInvite: ParentInvite) {
+    try {
+      //CHECKING IF THE USER IS ALREADY INVITED OR NOT(SHOULD NOT IMPLEMENT THIS IN FUTURE)
+      // const findUser = await this.pUserModel.findOne({
+      //   email: parentInvite.email,
+      // });
+
+      // if (!findUser) {
+      //   throw new BadRequestException('User not found');
+      // }
+      const findInvite = await this.InviteSchema.findOne({
+        email: parentInvite.email,
+        homeId: parentInvite.homeId,
+      });
+      if (findInvite) {
+        throw new BadRequestException('User already invited');
+      }
+      // TODO: Use this for JWT token generation
+      // const inviteToken = this.jwtService.sign(
+      //   { id: findUser._id },
+      //   { secret: process.env.JWT_SECRET, expiresIn: '5M' },
+      // );
+      const createInvite = await this.InviteSchema.create({
+        homeId: parentInvite.homeId,
+        email: parentInvite.email,
+        roleAssigned: UserRoleHierarchyEnum.CO_LEADER,
+        status: 'pending',
+      });
+
+      if (createInvite) {
+        const mailOptions: EmailOptions = {
+          to: parentInvite.email,
+          subject: 'Connect with your homies!!',
+          body: `Hey ${UserRoleHierarchyEnum.CO_LEADER}!! Just accept this invite and ready to connect with your homies  : ${process.env.FRONTEND_DEV_URL}/invite/${createInvite._id}`,
+        };
+        await this.emailService.sendMail(mailOptions);
+        return {
+          message: 'Mail send successfully',
+          status: 200,
+        };
+      }
+      return {
+        message: 'User not found',
+        status: 404,
+      };
+    } catch (error) {
+      throw new BadRequestException('User not found');
     }
   }
 }

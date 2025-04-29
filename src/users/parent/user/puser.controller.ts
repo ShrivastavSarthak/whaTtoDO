@@ -10,14 +10,14 @@ import {
   ValidationPipe,
 } from '@nestjs/common';
 import { AuthGuard } from 'src/utils/guards/auth.guard';
-import { AddChild, CreatePatentDto, LoginUserDto } from './dto/Puser.dto';
+import { AddChild, CreatePatentDto, LoginUserDto, ParentInvite } from './dto/Puser.dto';
 // eslint-disable-next-line @typescript-eslint/no-unused-vars
 import { ApiBearerAuth, ApiTags } from '@nestjs/swagger';
 import { EmailVerifyInterceptor } from 'src/utils/interceptors/verify.interceptor';
 import { pUserService } from './puser.service';
 
 @ApiTags('parent-auth')
-@Controller('pUser')
+@Controller('api/v1/pUser')
 export class pUserController {
   constructor(private ParentUserService: pUserService) {}
 
@@ -35,8 +35,8 @@ export class pUserController {
 
   @UseGuards(AuthGuard)
   @ApiBearerAuth('access-token')
-  @Post('/add-child')
   @UsePipes(new ValidationPipe())
+  @Post('/add-child')
   addChildren(@Body() addChild: AddChild) {
     return this.ParentUserService.addChildren(addChild);
   }
@@ -50,5 +50,13 @@ export class pUserController {
   @Get('/resend-verification-mail/:id')
   resendVerificationMail(@Param('id') id: string) {
     return this.ParentUserService.resendVerificationEmail({ id });
+  }
+
+  @UseGuards(AuthGuard)
+  @ApiBearerAuth('access-token')
+  @UsePipes(new ValidationPipe())
+  @Post('/parent/invite')
+  parentInvite(@Body() parentInvite: ParentInvite) {
+    return this.ParentUserService.sendParentInvite(parentInvite);
   }
 }

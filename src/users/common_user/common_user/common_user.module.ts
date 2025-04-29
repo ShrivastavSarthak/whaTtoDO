@@ -32,13 +32,13 @@ import { CommonUserService } from './common_user.service';
         host: 'sandbox.smtp.mailtrap.io',
         port: 2525,
         auth: {
-          user: 'sharthakshrivastav20112002@gmail.com',
-          pass: 'ovqijipqjplpyacn',
+          user: process.env.WORKING_EMAIL,
+          pass: process.env.APP_PASS,
         },
       },
     }),
   ],
-  providers: [CommonUserService,EmailService, EventsGateway],
+  providers: [CommonUserService, EmailService, EventsGateway],
   controllers: [CommonUserController],
 })
 export class commonUserModule {}

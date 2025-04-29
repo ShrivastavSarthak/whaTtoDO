@@ -8,6 +8,8 @@ import { User, UserSchema } from 'src/Schemas/cSchema/user.schema';
 import { MailerModule } from '@nestjs-modules/mailer';
 import { EmailService } from 'src/utils/services/email';
 import { EventsGateway } from 'src/utils/events/events.gateway';
+import { invite, InviteSchema } from 'src/Schemas/inviteSchema/inviteSchema';
+import { ConfigService } from '@nestjs/config';
 
 @Module({
   imports: [
@@ -20,22 +22,29 @@ import { EventsGateway } from 'src/utils/events/events.gateway';
         name: User.name,
         schema: UserSchema,
       },
+      {
+        name: invite.name,
+        schema: InviteSchema,
+      },
     ]),
     JwtModule.register({
       global: true,
       secret: 'IamSecret',
       signOptions: { expiresIn: '59m' },
     }),
-    MailerModule.forRoot({
-      transport: {
-        service: 'gmail',
-        host: 'sandbox.smtp.mailtrap.io',
-        port: 2525,
-        auth: {
-          user: 'sharthakshrivastav20112002@gmail.com',
-          pass: 'ovqijipqjplpyacn',
+    MailerModule.forRootAsync({
+      inject: [ConfigService],
+      useFactory: async (config: ConfigService) => ({
+        transport: {
+          service: 'gmail',
+          host: config.get('MAIL_SERVICE'),
+          port: config.get('MAIL_PORT'),
+          auth: {
+            user: config.get('WORKING_EMAIL'),
+            pass: config.get('APP_PASS'),
+          },
         },
-      },
+      }),
     }),
   ],
   providers: [pUserService, EmailService, EventsGateway],
