@@ -1,6 +1,7 @@
 import {
   BadRequestException,
   Injectable,
+  InternalServerErrorException,
   UnauthorizedException,
 } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
@@ -13,26 +14,30 @@ import {
   UserRoleHierarchyEnum,
 } from 'src/lib/enums/common.enums';
 import { User } from 'src/Schemas/cSchema/user.schema';
+import { Home } from 'src/Schemas/homeSchema/homeSchema';
+import { Invite } from 'src/Schemas/inviteSchema/inviteSchema';
 import { pUser } from 'src/Schemas/pSchema/pUser.schema';
 import { EmailOptions } from 'src/type';
 import { EventsGateway } from 'src/utils/events/events.gateway';
 import { EmailService } from 'src/utils/services/email';
 import { ParentSignupFieldValidators } from 'src/utils/validators/fieldValidators';
 import {
+  AcceptInviteDto,
   AddChild,
+  ChildInviteDto,
   CreatePatentDto,
   LoginUserDto,
   ParentInvite,
   ResendVerificationEmail,
 } from './dto/Puser.dto';
-import { invite } from 'src/Schemas/inviteSchema/inviteSchema';
 
 @Injectable()
 export class pUserService {
   constructor(
     @InjectModel(pUser.name) private pUserModel: Model<pUser>,
-    @InjectModel(invite.name) private InviteSchema: Model<invite>,
+    @InjectModel(Invite.name) private InviteSchema: Model<Invite>,
     @InjectModel(User.name) private userModel: Model<User>,
+    @InjectModel(Home.name) private homeModel: Model<Home>,
     private jwtService: JwtService,
     private emailService: EmailService,
     private eventGateway: EventsGateway,
@@ -270,29 +275,44 @@ export class pUserService {
 
   async sendParentInvite(parentInvite: ParentInvite) {
     try {
-      //CHECKING IF THE USER IS ALREADY INVITED OR NOT(SHOULD NOT IMPLEMENT THIS IN FUTURE)
-      // const findUser = await this.pUserModel.findOne({
-      //   email: parentInvite.email,
-      // });
-
-      // if (!findUser) {
-      //   throw new BadRequestException('User not found');
-      // }
+      const findUser = await this.InviteSchema.findOne({
+        email: parentInvite.email,
+      });
+      const inviteToken = this.jwtService.sign(
+        { id: parentInvite.email },
+        { secret: process.env.JWT_SECRET, expiresIn: '5M' },
+      );
+      if (findUser) {
+      }
       const findInvite = await this.InviteSchema.findOne({
         email: parentInvite.email,
         homeId: parentInvite.homeId,
       });
       if (findInvite) {
-        throw new BadRequestException('User already invited');
+        const updateToken = await this.InviteSchema.findByIdAndUpdate(
+          findInvite._id,
+          {
+            token: inviteToken,
+          },
+        );
+        if (updateToken) {
+          const mailOptions: EmailOptions = {
+            to: parentInvite.email,
+            subject: 'Connect with your homies!!',
+            body: `Hey ${UserRoleHierarchyEnum.CO_LEADER}!! Just accept this invite and ready to connect with your homies  : ${process.env.FRONTEND_DEV_URL}/invite/${updateToken._id}`,
+          };
+          await this.emailService.sendMail(mailOptions);
+          return {
+            message: 'Mail send successfully',
+            status: 200,
+          };
+        }
       }
-      // TODO: Use this for JWT token generation
-      // const inviteToken = this.jwtService.sign(
-      //   { id: findUser._id },
-      //   { secret: process.env.JWT_SECRET, expiresIn: '5M' },
-      // );
+
       const createInvite = await this.InviteSchema.create({
         homeId: parentInvite.homeId,
         email: parentInvite.email,
+        token: inviteToken,
         roleAssigned: UserRoleHierarchyEnum.CO_LEADER,
         status: 'pending',
       });
@@ -316,5 +336,100 @@ export class pUserService {
     } catch (error) {
       throw new BadRequestException('User not found');
     }
+  }
+
+  async sendChildrenInvites(childInvitesDto: ChildInviteDto) {
+    const { emails, homeId } = childInvitesDto;
+
+    const checkHomeExist = await this.homeModel.findById(homeId);
+    if (!checkHomeExist) {
+      throw new BadRequestException('Home not found');
+    }
+
+    const isInviteCreated = Promise.all(
+      emails.map(async (email: string) => {
+        const isInviteCreated = await this.InviteSchema.create({
+          homeId: homeId,
+          email: email,
+          roleAssigned: UserRoleHierarchyEnum.MEMBER,
+          status: 'pending',
+        });
+        if (isInviteCreated) {
+          const mailOptions: EmailOptions = {
+            to: email,
+            subject: 'Connect with your homies!!',
+            body: `Hey ${UserRoleHierarchyEnum.MEMBER}!! Just accept this invite and ready to connect with your homies  : ${process.env.FRONTEND_DEV_URL}/invite/${isInviteCreated._id}`,
+          };
+          await this.emailService.sendMail(mailOptions);
+        }
+      }),
+    );
+
+    if (!isInviteCreated) {
+      throw new InternalServerErrorException('Invite not created');
+    }
+
+    return {
+      message: 'Invite created successfully',
+      status: 201,
+    };
+  }
+
+  async acceptHomeInvite(invite: { id: string; token: string }) {
+    const { id, token } = invite;
+    const findInvite = await this.InviteSchema.find({ _id: id, token: token });
+
+    if (!findInvite) {
+      throw new BadRequestException('Invalid invite link');
+    }
+
+    return {
+      message: 'Invite accepted successfully',
+      status: 200,
+    };
+  }
+
+  async acceptCoLeaderInvite(acceptInviteDto: AcceptInviteDto) {
+    const findInvite = await this.InviteSchema.findOne({
+      email: acceptInviteDto.email,
+      token: acceptInviteDto.inviteToken,
+    });
+
+    if (!findInvite) {
+      throw new BadRequestException('Invalid invite link');
+    }
+
+    const findUser = await this.pUserModel.findOne({
+      email: findInvite.email,
+    });
+
+    if (!findUser) {
+      throw new BadRequestException(
+        'User not found please create account first',
+      );
+    }
+
+    if (!findUser) {
+      throw new BadRequestException('User not found');
+    }
+
+    const addCoLeader = await this.homeModel.findByIdAndUpdate(
+      findInvite.homeId,
+      {
+        coLeader: findUser._id,
+      },
+    );
+
+    if (!addCoLeader) {
+      throw new BadRequestException('Unable to add co-leader');
+    }
+    if (findInvite) {
+      await this.InviteSchema.findByIdAndDelete(findInvite._id);
+    }
+
+    return {
+      message: 'Co-leader added successfully',
+      status: 200,
+    };
   }
 }

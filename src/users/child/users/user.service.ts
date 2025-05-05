@@ -1,7 +1,7 @@
 import {
   BadRequestException,
   Injectable,
-  UnauthorizedException,
+  UnauthorizedException
 } from '@nestjs/common';
 import { JwtService } from '@nestjs/jwt';
 import { InjectModel } from '@nestjs/mongoose';
@@ -9,6 +9,8 @@ import bcrypt from 'bcryptjs';
 import { Model } from 'mongoose';
 import { UserRoleEnum } from 'src/lib/enums/common.enums';
 import { User } from 'src/Schemas/cSchema/user.schema';
+import { Home } from 'src/Schemas/homeSchema/homeSchema';
+import { Invite } from 'src/Schemas/inviteSchema/inviteSchema';
 import { ChildSignupInterface } from 'src/shared/interface/user-interface';
 import { EmailOptions } from 'src/type';
 import { EventsGateway } from 'src/utils/events/events.gateway';
@@ -17,12 +19,14 @@ import { ChildSignupFieldValidators } from 'src/utils/validators/fieldValidators
 import {
   CreateUsrDto,
   LoginUserDto,
-  ResendVerificationEmail
+  ResendVerificationEmailDto
 } from './dtos/User.dto';
 @Injectable()
 export class UserService {
   constructor(
     @InjectModel(User.name) private userModel: Model<User>,
+    @InjectModel(Home.name) private homeModel: Model<Home>,
+    @InjectModel(Invite.name) private InviteModel: Model<Invite>,
     private jwtService: JwtService,
     private emailService: EmailService,
     private eventGateway: EventsGateway,
@@ -141,9 +145,8 @@ export class UserService {
     }
   }
 
-
   async resendVerificationEmail(
-    ResendVerificationEmail: ResendVerificationEmail,
+    ResendVerificationEmail: ResendVerificationEmailDto,
   ) {
     try {
       const findUser = await this.userModel.findById(

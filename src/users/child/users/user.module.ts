@@ -6,6 +6,8 @@ import { EmailService } from 'src/utils/services/email';
 import { UserController } from './user.controller';
 import { UserService } from './user.service';
 import { EventsGateway } from 'src/utils/events/events.gateway';
+import { Invite, InviteSchema } from 'src/Schemas/inviteSchema/inviteSchema';
+import { Home, HomeSchema } from 'src/Schemas/homeSchema/homeSchema';
 
 @Module({
   imports: [
@@ -13,6 +15,14 @@ import { EventsGateway } from 'src/utils/events/events.gateway';
       {
         name: User.name,
         schema: UserSchema,
+      },
+      {
+        name: Invite.name,
+        schema: InviteSchema,
+      },
+      {
+        name: Home.name,
+        schema: HomeSchema,
       },
     ]),
     JwtModule.register({

@@ -1,6 +1,6 @@
 import { Module } from '@nestjs/common';
 import { MongooseModule } from '@nestjs/mongoose';
-import { home, HomeSchema } from 'src/Schemas/homeSchema/homeSchema';
+import { Home, HomeSchema } from 'src/Schemas/homeSchema/homeSchema';
 import { HomeController } from './home.controller';
 import { HomeService } from './home.service';
 import { pUser, pUserSchema } from 'src/Schemas/pSchema/pUser.schema';
@@ -9,7 +9,7 @@ import { pUser, pUserSchema } from 'src/Schemas/pSchema/pUser.schema';
   imports: [
     MongooseModule.forFeature([
       {
-        name: home.name,
+        name: Home.name,
         schema: HomeSchema,
       },
       {
