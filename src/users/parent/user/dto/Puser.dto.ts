@@ -95,7 +95,6 @@ export class ResendVerificationEmail {
   id: string;
 }
 
-
 export class ParentInvite {
   @ApiProperty({
     type: String,
@@ -108,4 +107,32 @@ export class ParentInvite {
     description: 'This is important',
   })
   homeId: string;
+}
+
+export class ChildInviteDto {
+  @ApiProperty({
+    type: String,
+    description: 'This is important',
+  })
+  homeId: string;
+
+  @ApiProperty({
+    type: Array,
+    description: 'This is important',
+  })
+  emails: string[];
+}
+
+export class AcceptInviteDto {
+  @ApiProperty({
+    type: String,
+    description: 'This is important',
+  })
+  email: string;
+
+  @ApiProperty({
+    type: String,
+    description: 'This is important',
+  })
+  inviteToken: string;
 }

@@ -8,8 +8,9 @@ import { User, UserSchema } from 'src/Schemas/cSchema/user.schema';
 import { MailerModule } from '@nestjs-modules/mailer';
 import { EmailService } from 'src/utils/services/email';
 import { EventsGateway } from 'src/utils/events/events.gateway';
-import { invite, InviteSchema } from 'src/Schemas/inviteSchema/inviteSchema';
+import { Invite, InviteSchema } from 'src/Schemas/inviteSchema/inviteSchema';
 import { ConfigService } from '@nestjs/config';
+import { Home, HomeSchema } from 'src/Schemas/homeSchema/homeSchema';
 
 @Module({
   imports: [
@@ -23,8 +24,12 @@ import { ConfigService } from '@nestjs/config';
         schema: UserSchema,
       },
       {
-        name: invite.name,
+        name: Invite.name,
         schema: InviteSchema,
+      },
+      {
+        name: Home.name,
+        schema: HomeSchema,
       },
     ]),
     JwtModule.register({

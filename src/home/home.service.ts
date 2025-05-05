@@ -1,7 +1,7 @@
 import { BadRequestException, Injectable } from '@nestjs/common';
 import { InjectConnection, InjectModel } from '@nestjs/mongoose';
 import { Connection, Model } from 'mongoose';
-import { home } from 'src/Schemas/homeSchema/homeSchema';
+import { Home } from 'src/Schemas/homeSchema/homeSchema';
 import { pUser } from 'src/Schemas/pSchema/pUser.schema';
 import { HomeInterface } from 'src/shared/interface/home-interface';
 import { HomeFieldValidators } from 'src/utils/validators/fieldValidators';
@@ -10,7 +10,7 @@ import { CreateHomeDto } from './dto/home.dto';
 @Injectable()
 export class HomeService {
   constructor(
-    @InjectModel(home.name) private homeModel: Model<home>,
+    @InjectModel(Home.name) private homeModel: Model<Home>,
     @InjectModel(pUser.name) private pUserModel: Model<pUser>,
     @InjectConnection() private connection: Connection,
   ) {}

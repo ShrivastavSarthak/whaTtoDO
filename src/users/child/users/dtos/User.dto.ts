@@ -55,7 +55,7 @@ export class VerifyUser{
     verifyToken:string
 }
 
-export class ResendVerificationEmail{
+export class ResendVerificationEmailDto{
   @ApiProperty({
       type: String,
       description: 'This is important',

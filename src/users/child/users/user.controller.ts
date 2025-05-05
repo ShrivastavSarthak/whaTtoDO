@@ -47,4 +47,8 @@ export class UserController {
   resendVerificationMail(@Param('id') id: string) {
     return this.userService.resendVerificationEmail({ id });
   }
+
+
+
+
 }
