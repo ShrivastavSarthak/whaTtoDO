@@ -1,0 +1,9 @@
+config:
+  target: "http://localhost:5000"
+  phases:
+    - duration: 60
+      arrivalRate: 50 # 50 requests per second
+scenarios:
+  - flow:
+      - get:
+          url: "/api/v1/child/signup"
