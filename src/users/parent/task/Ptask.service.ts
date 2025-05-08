@@ -10,6 +10,7 @@ import {
   ReadParentTaskDto,
   UpdateParentTaskDto,
 } from './dtos/Ptask.dto';
+import { Invite } from 'src/Schemas/inviteSchema/inviteSchema';
 
 @Injectable()
 export class pTaskUserService {
@@ -17,6 +18,7 @@ export class pTaskUserService {
     @InjectModel(Task.name) private taskModel: Model<Task>,
     // @InjectModel(User.name) private uTaskModel: Model<User>,
     // @InjectModel(pUser.name) private pTaskModel: Model<pUser>,
+    @InjectModel(Invite.name) private inviteModel: Model<Invite>,
   ) {}
 
   async createTaskByParent(createTaskByParentDto: CreateParentTaskDto) {
@@ -126,6 +128,28 @@ export class pTaskUserService {
       };
     } catch (error) {
       throw new Error(error);
+    }
+  }
+
+  async getAllRequest(homeId:string){
+    try {
+      const findAllTask = await this.inviteModel.find({homeId:homeId}, {token: 0});
+
+      if(!findAllTask) {
+        return {
+          message: 'Task not found',
+          status: '404',
+        };
+      }
+      return {
+        message: 'Task fetched successfully',
+        status: '200',
+        findAllTask,
+      };
+
+    } catch (error) {
+      throw new Error(error);
+      
     }
   }
 }

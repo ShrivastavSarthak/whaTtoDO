@@ -1,4 +1,4 @@
-import { MiddlewareConsumer, Module, NestModule } from '@nestjs/common';
+import { MiddlewareConsumer, Module, NestModule, RequestMethod } from '@nestjs/common';
 import { MongooseModule } from '@nestjs/mongoose';
 import { Task, TaskSchema } from 'src/Schemas/cSchema/task.schema';
 import { User, UserSchema } from 'src/Schemas/cSchema/user.schema';
@@ -7,6 +7,7 @@ import { pTaskUserService } from './Ptask.service';
 import { pTaskController } from './Ptask.controller';
 import { checkVerification } from 'src/utils/middleware/verified.middleware';
 import { CheckRelation } from 'src/utils/middleware/relation.middleware';
+import { Invite, InviteSchema } from 'src/Schemas/inviteSchema/inviteSchema';
 
 @Module({
   imports: [
@@ -23,6 +24,10 @@ import { CheckRelation } from 'src/utils/middleware/relation.middleware';
         name: pUser.name,
         schema: pUserSchema,
       },
+      {
+        name: Invite.name,
+        schema: InviteSchema,
+      }
     ]),
   ],
   providers: [pTaskUserService],
@@ -30,6 +35,12 @@ import { CheckRelation } from 'src/utils/middleware/relation.middleware';
 })
 export class pTaskModule implements NestModule {
   configure(consumer: MiddlewareConsumer) {
-    consumer.apply(CheckRelation, checkVerification).forRoutes(pTaskController);
+    consumer
+      .apply(CheckRelation, checkVerification)
+      .forRoutes(
+        { path: 'parent/task', method: RequestMethod.POST },
+        { path: 'parent/task/:id', method: RequestMethod.PUT },
+        { path: 'parent/task/:id', method: RequestMethod.DELETE }
+      );
   }
 }
