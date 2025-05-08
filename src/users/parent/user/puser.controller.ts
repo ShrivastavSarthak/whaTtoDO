@@ -66,9 +66,10 @@ export class pUserController {
   parentInvite(@Body() parentInvite: ParentInvite) {
     return this.ParentUserService.sendParentInvite(parentInvite);
   }
-
+  
   @UseGuards(AuthGuard)
   @ApiBearerAuth('access-token')
+  @UsePipes(new ValidationPipe())
   @Post('/child/invite')
   sendChildInvite(@Body() childInvitesDto: ChildInviteDto) {
     return this.ParentUserService.sendChildrenInvites(childInvitesDto);

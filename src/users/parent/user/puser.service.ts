@@ -341,32 +341,70 @@ export class pUserService {
   async sendChildrenInvites(childInvitesDto: ChildInviteDto) {
     const { emails, homeId } = childInvitesDto;
 
+    if (!homeId || !homeId.match(/^[0-9a-fA-F]{24}$/)) {
+      throw new BadRequestException('Invalid homeId format');
+    }
     const checkHomeExist = await this.homeModel.findById(homeId);
     if (!checkHomeExist) {
       throw new BadRequestException('Home not found');
     }
 
-    const isInviteCreated = Promise.all(
+    const inviteResults = await Promise.allSettled(
       emails.map(async (email: string) => {
+        const inviteToken = this.jwtService.sign(
+          { email: email },
+          { secret: process.env.JWT_SECRET, expiresIn: '5M' },
+        );
+        const findInvite = await this.InviteSchema.findOne({
+          email: email,
+          homeId: homeId,
+        });
+        if (findInvite) {
+          const updateToken = await this.InviteSchema.findByIdAndUpdate(
+            findInvite._id,
+            {
+              token: inviteToken,
+            },
+          );
+          if (updateToken) {
+            const mailOptions: EmailOptions = {
+              to: email,
+              subject: 'Connect with your homies!!',
+              body: `Hey ${UserRoleHierarchyEnum.MEMBER}!! Just accept this invite and ready to connect with your homies  : ${process.env.FRONTEND_DEV_URL}/invite/${updateToken._id}`,
+            };
+            await this.emailService.sendMail(mailOptions);
+            return {
+              message: 'Mail send successfully',
+              status: 200,
+            };
+          }
+        }
         const isInviteCreated = await this.InviteSchema.create({
           homeId: homeId,
           email: email,
           roleAssigned: UserRoleHierarchyEnum.MEMBER,
           status: 'pending',
+          token: inviteToken,
         });
+        console.log(isInviteCreated, 'isInviteCreated');
+
         if (isInviteCreated) {
           const mailOptions: EmailOptions = {
             to: email,
             subject: 'Connect with your homies!!',
-            body: `Hey ${UserRoleHierarchyEnum.MEMBER}!! Just accept this invite and ready to connect with your homies  : ${process.env.FRONTEND_DEV_URL}/invite/${isInviteCreated._id}`,
+            body: `Hey ${UserRoleHierarchyEnum.MEMBER}!! Accept this invite and get ready to connect with your homies: ${process.env.FRONTEND_DEV_URL}/invite/${isInviteCreated._id}`,
           };
           await this.emailService.sendMail(mailOptions);
         }
       }),
     );
 
-    if (!isInviteCreated) {
-      throw new InternalServerErrorException('Invite not created');
+    const failedInvites = inviteResults.filter(
+      (result) => result.status === 'rejected',
+    );
+
+    if (failedInvites.length > 0) {
+      throw new InternalServerErrorException('Some invites were not created');
     }
 
     return {

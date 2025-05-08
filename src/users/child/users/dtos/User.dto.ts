@@ -62,3 +62,17 @@ export class ResendVerificationEmailDto{
     })
     id:string
 }
+
+export class AcceptChildInviteDto{
+  @ApiProperty({
+      type: String,
+      description: 'This is important',
+    })
+    email:string
+
+  @ApiProperty({
+      type: String,
+      description: 'This is important',
+    })
+    inviteToken:string
+}

@@ -12,7 +12,7 @@ import {
 import { ApiBearerAuth, ApiTags } from '@nestjs/swagger';
 import { AuthGuard } from 'src/utils/guards/auth.guard';
 import { EmailVerifyInterceptor } from 'src/utils/interceptors/verify.interceptor';
-import { CreateUsrDto, LoginUserDto } from './dtos/User.dto';
+import { AcceptChildInviteDto, CreateUsrDto, LoginUserDto } from './dtos/User.dto';
 import { UserService } from './user.service';
 
 @ApiTags('child-auth')
@@ -48,7 +48,10 @@ export class UserController {
     return this.userService.resendVerificationEmail({ id });
   }
 
-
-
-
+  @UseGuards(AuthGuard)
+  @ApiBearerAuth('access-token')
+  @Get('/invite-accepted')
+  acceptInvite(@Body() acceptChildInviteDto: AcceptChildInviteDto) {
+    return this.userService.acceptChildInvite({acceptChildInviteDto });
+  }
 }

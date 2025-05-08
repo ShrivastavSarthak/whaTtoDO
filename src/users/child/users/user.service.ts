@@ -1,7 +1,7 @@
 import {
   BadRequestException,
   Injectable,
-  UnauthorizedException
+  UnauthorizedException,
 } from '@nestjs/common';
 import { JwtService } from '@nestjs/jwt';
 import { InjectModel } from '@nestjs/mongoose';
@@ -19,7 +19,7 @@ import { ChildSignupFieldValidators } from 'src/utils/validators/fieldValidators
 import {
   CreateUsrDto,
   LoginUserDto,
-  ResendVerificationEmailDto
+  ResendVerificationEmailDto,
 } from './dtos/User.dto';
 @Injectable()
 export class UserService {
@@ -185,5 +185,41 @@ export class UserService {
     } catch (error) {
       throw new UnauthorizedException();
     }
+  }
+
+  async acceptChildInvite({ acceptChildInviteDto: AcceptChildInviteDto }) {
+    const findUser = await this.userModel.findOne({
+      email: AcceptChildInviteDto.email,
+    });
+    if (!findUser) {
+      throw new BadRequestException(
+        'user not found in the database first need to signup',
+      );
+    }
+    const findInvite = await this.InviteModel.findOne({
+      email: AcceptChildInviteDto.email,
+      inviteToken: AcceptChildInviteDto.inviteToken,
+    });
+
+    if (!findInvite) {
+      throw new BadRequestException('Invalid invite token or email');
+    }
+
+    const findHomeAndAddChild = await this.homeModel.findByIdAndUpdate(
+      findInvite.homeId,
+      {
+        $push: {
+          child: findUser._id,
+        },
+      },
+      { new: true },
+    );
+    if (!findHomeAndAddChild) {
+      throw new BadRequestException('Home not found');
+    }
+
+    return {
+      message: 'Child added to home successfully',
+    };
   }
 }

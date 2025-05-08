@@ -61,4 +61,11 @@ export class pTaskController {
   updateTaskByParent(@Body() updateTaskByParent: UpdateParentTaskDto) {
     return this.pTaskService.updateTaskByParent(updateTaskByParent);
   }
+
+  @UseGuards(AuthGuard)
+  @UsePipes(new ValidationPipe())
+  @Get('/get-invite/:homeId')
+  getAllRequest(@Param('homeId') homeId: string) {
+    return this.pTaskService.getAllRequest(homeId);
+  }
 }
