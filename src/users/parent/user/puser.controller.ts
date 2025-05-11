@@ -11,12 +11,9 @@ import {
 } from '@nestjs/common';
 import { AuthGuard } from 'src/utils/guards/auth.guard';
 import {
-  AcceptInviteDto,
   AddChild,
-  ChildInviteDto,
   CreatePatentDto,
-  LoginUserDto,
-  ParentInvite,
+  LoginUserDto
 } from './dto/Puser.dto';
 // eslint-disable-next-line @typescript-eslint/no-unused-vars
 import { ApiBearerAuth, ApiTags } from '@nestjs/swagger';
@@ -59,32 +56,5 @@ export class pUserController {
     return this.ParentUserService.resendVerificationEmail({ id });
   }
 
-  @UseGuards(AuthGuard)
-  @ApiBearerAuth('access-token')
-  @UsePipes(new ValidationPipe())
-  @Post('/parent/invite')
-  parentInvite(@Body() parentInvite: ParentInvite) {
-    return this.ParentUserService.sendParentInvite(parentInvite);
-  }
   
-  @UseGuards(AuthGuard)
-  @ApiBearerAuth('access-token')
-  @UsePipes(new ValidationPipe())
-  @Post('/child/invite')
-  sendChildInvite(@Body() childInvitesDto: ChildInviteDto) {
-    return this.ParentUserService.sendChildrenInvites(childInvitesDto);
-  }
-
-  @Get('invite/:id/:token')
-  acceptInvite(@Param('id') id: string, @Param('token') token: string) {
-    const invite: { id: string; token: string } = { id, token };
-    return this.ParentUserService.acceptHomeInvite(invite);
-  }
-
-  @UseGuards(AuthGuard)
-  @ApiBearerAuth('access-token')
-  @Post('invite-accepted')
-  inviteAccepted(@Body() acceptInviteDto: AcceptInviteDto) {
-    return this.ParentUserService.acceptCoLeaderInvite(acceptInviteDto);
-  }
 }
