@@ -31,6 +31,7 @@ import { Home, HomeSchema } from 'src/Schemas/homeSchema/homeSchema';
         name: Home.name,
         schema: HomeSchema,
       },
+      
     ]),
     JwtModule.register({
       global: true,
