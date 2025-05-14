@@ -4,6 +4,12 @@ import { Home, HomeSchema } from 'src/Schemas/homeSchema/homeSchema';
 import { HomeController } from './home.controller';
 import { HomeService } from './home.service';
 import { pUser, pUserSchema } from 'src/Schemas/pSchema/pUser.schema';
+import { JwtModule } from '@nestjs/jwt';
+import { MailerModule } from '@nestjs-modules/mailer';
+import { ConfigService } from '@nestjs/config';
+import { EmailService } from 'src/utils/services/email';
+import { EventsGateway } from 'src/utils/events/events.gateway';
+import { User, UserSchema } from 'src/Schemas/cSchema/user.schema';
 
 @Module({
   imports: [
@@ -14,11 +20,34 @@ import { pUser, pUserSchema } from 'src/Schemas/pSchema/pUser.schema';
       },
       {
         name: pUser.name,
-        schema: pUserSchema
-      }
+        schema: pUserSchema,
+      },
+      {
+        name: User.name,
+        schema: UserSchema,
+      },
     ]),
+    JwtModule.register({
+      global: true,
+      secret: 'IamSecret',
+      signOptions: { expiresIn: '59m' },
+    }),
+    MailerModule.forRootAsync({
+      inject: [ConfigService],
+      useFactory: async (config: ConfigService) => ({
+        transport: {
+          service: 'gmail',
+          host: config.get('MAIL_SERVICE'),
+          port: config.get('MAIL_PORT'),
+          auth: {
+            user: config.get('WORKING_EMAIL'),
+            pass: config.get('APP_PASS'),
+          },
+        },
+      }),
+    }),
   ],
-  providers: [HomeService],
+  providers: [HomeService, EmailService, EventsGateway],
   controllers: [HomeController],
 })
 export class HomeModule {}
