@@ -50,7 +50,7 @@ export class UserController {
 
   @UseGuards(AuthGuard)
   @ApiBearerAuth('access-token')
-  @Get('/invite-accepted')
+  @Post('/invite-accepted')
   acceptInvite(@Body() acceptChildInviteDto: AcceptChildInviteDto) {
     return this.userService.acceptChildInvite({acceptChildInviteDto });
   }

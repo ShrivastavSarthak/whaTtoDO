@@ -18,7 +18,7 @@ export class Home {
   @Prop({ type: mongoose.Schema.Types.ObjectId, ref: 'pUser', default: null })
   coLeader: string;
 
-  @Prop({ type: mongoose.Schema.Types.ObjectId, ref: 'User', default: null })
+  @Prop({ type: mongoose.Schema.Types.ObjectId, ref: 'User', default: [] })
   members: [];
 
   @Prop({ default: new Date() })

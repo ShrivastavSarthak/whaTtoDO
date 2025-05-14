@@ -1,4 +1,8 @@
-import { BadRequestException, Injectable } from '@nestjs/common';
+import {
+  BadRequestException,
+  Injectable,
+  NotFoundException,
+} from '@nestjs/common';
 import { InjectConnection, InjectModel } from '@nestjs/mongoose';
 import { Connection, Model } from 'mongoose';
 import { Home } from 'src/Schemas/homeSchema/homeSchema';
@@ -6,12 +10,14 @@ import { pUser } from 'src/Schemas/pSchema/pUser.schema';
 import { HomeInterface } from 'src/shared/interface/home-interface';
 import { HomeFieldValidators } from 'src/utils/validators/fieldValidators';
 import { CreateHomeDto } from './dto/home.dto';
+import { User } from 'src/Schemas/cSchema/user.schema';
 
 @Injectable()
 export class HomeService {
   constructor(
     @InjectModel(Home.name) private homeModel: Model<Home>,
     @InjectModel(pUser.name) private pUserModel: Model<pUser>,
+    @InjectModel(User.name) private cUserModel: Model<User>,
     @InjectConnection() private connection: Connection,
   ) {}
 
@@ -97,6 +103,67 @@ export class HomeService {
       message: 'Home found successfully',
       data: home,
       status: 200,
+    };
+  }
+
+  async deleteHome(homeId: string) {
+    if (!homeId) {
+      throw new BadRequestException('homeId should not be empty');
+    }
+    const findHome = await this.homeModel.findById(homeId);
+
+    if (!findHome) {
+      throw new NotFoundException('Home not exist or already deleted');
+    }
+
+    const session = await this.connection.startSession();
+
+    try {
+      session.startTransaction({
+        readConcern: { level: 'snapshot' },
+        writeConcern: { w: 'majority' },
+      });
+      await this.pUserModel
+        .updateMany(
+          { homeId: findHome._id },
+          { $set: { homeId: null, updated_at: new Date() } },
+        )
+        .session(session);
+
+      if (findHome.members) {
+        await this.cUserModel
+          .updateMany(
+            { homeId: findHome._id },
+            { $set: { homeId: null, updated_at: new Date() } },
+          )
+          .session(session);
+      }
+
+      await this.homeModel.findByIdAndDelete(findHome._id).session(session);
+
+      await session.commitTransaction();
+      return {
+        statusCode: 200,
+        message: 'Home deleted successfully',
+      };
+    } catch (error) {
+      await session.abortTransaction();
+      throw new BadRequestException(
+        'Sorry home did not delete, please try again in a while',
+      );
+    }
+
+    const deleteHomeById = await this.homeModel.findByIdAndDelete(homeId);
+
+    if (!deleteHomeById) {
+      throw new BadRequestException(
+        'Sorry home did not delete, please try again in a while',
+      );
+    }
+
+    return {
+      statusCode: 200,
+      message: 'Home deleted successfully',
     };
   }
 }

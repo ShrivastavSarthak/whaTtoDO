@@ -198,7 +198,7 @@ export class UserService {
     }
     const findInvite = await this.InviteModel.findOne({
       email: AcceptChildInviteDto.email,
-      inviteToken: AcceptChildInviteDto.inviteToken,
+      token: AcceptChildInviteDto.inviteToken,
     });
 
     if (!findInvite) {
@@ -209,7 +209,7 @@ export class UserService {
       findInvite.homeId,
       {
         $push: {
-          child: findUser._id,
+          members: findUser._id,
         },
       },
       { new: true },
@@ -217,6 +217,11 @@ export class UserService {
     if (!findHomeAndAddChild) {
       throw new BadRequestException('Home not found');
     }
+
+    await findInvite.updateOne(
+      { $set: { token: null, status: 'accepted' } },
+      { new: true },
+    );
 
     return {
       message: 'Child added to home successfully',
