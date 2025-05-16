@@ -5,19 +5,19 @@ import {
 } from '@nestjs/common';
 import { InjectConnection, InjectModel } from '@nestjs/mongoose';
 import { Connection, Model } from 'mongoose';
+import { Child } from 'src/Schemas/cSchema/child.schema';
 import { Home } from 'src/Schemas/homeSchema/homeSchema';
 import { pUser } from 'src/Schemas/pSchema/pUser.schema';
 import { HomeInterface } from 'src/shared/interface/home-interface';
 import { HomeFieldValidators } from 'src/utils/validators/fieldValidators';
 import { CreateHomeDto } from './dto/home.dto';
-import { User } from 'src/Schemas/cSchema/user.schema';
 
 @Injectable()
 export class HomeService {
   constructor(
     @InjectModel(Home.name) private homeModel: Model<Home>,
     @InjectModel(pUser.name) private pUserModel: Model<pUser>,
-    @InjectModel(User.name) private cUserModel: Model<User>,
+    @InjectModel(Child.name) private cUserModel: Model<Child>,
     @InjectConnection() private connection: Connection,
   ) {}
 
@@ -30,8 +30,9 @@ export class HomeService {
     };
     const checkValidation = HomeFieldValidators(home);
 
-    console.log(checkValidation);
-
+    if (!checkValidation) {
+      throw new BadRequestException('Field validation failed');
+    }
     const session = await this.connection.startSession();
 
     try {
@@ -52,10 +53,10 @@ export class HomeService {
       const newHome = await this.homeModel.create(
         [
           {
-            homeName: createHomeDto.homeName,
-            homeDesc: createHomeDto.homeDesc,
-            homePhoto: createHomeDto.homePhoto,
-            leader: createHomeDto.leader,
+            leader: home.leader,
+            homeName: home.homeName,
+            homeDesc: home.homeDesc,
+            homePhoto: home.homePhoto,
           },
         ],
         { session },
@@ -82,7 +83,7 @@ export class HomeService {
       };
     } catch (error) {
       await session.abortTransaction();
-      throw new BadRequestException('Could not create home please try again!!');
+      throw new BadRequestException(error);
     } finally {
       session.endSession();
     }

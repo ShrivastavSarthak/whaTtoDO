@@ -5,8 +5,8 @@ import {
   RequestMethod,
 } from '@nestjs/common';
 import { MongooseModule } from '@nestjs/mongoose';
-import { Task, TaskSchema } from 'src/Schemas/cSchema/task.schema';
-import { User, UserSchema } from 'src/Schemas/cSchema/user.schema';
+import { ChildTask, ChildTaskSchema } from 'src/Schemas/cSchema/childTask.schema';
+import { Child, UserSchema } from 'src/Schemas/cSchema/child.schema';
 import { pUser, pUserSchema } from 'src/Schemas/pSchema/pUser.schema';
 import { pTaskUserService } from './Ptask.service';
 import { pTaskController } from './Ptask.controller';
@@ -24,11 +24,11 @@ import { EventsGateway } from 'src/utils/events/events.gateway';
   imports: [
     MongooseModule.forFeature([
       {
-        name: Task.name,
-        schema: TaskSchema,
+        name: ChildTask.name,
+        schema: ChildTaskSchema,
       },
       {
-        name: User.name,
+        name: Child.name,
         schema: UserSchema,
       },
       {

@@ -11,7 +11,7 @@ import { Model } from 'mongoose';
 import {
   UserRoleEnum
 } from 'src/lib/enums/common.enums';
-import { User } from 'src/Schemas/cSchema/user.schema';
+import { Child } from 'src/Schemas/cSchema/child.schema';
 import { pUser } from 'src/Schemas/pSchema/pUser.schema';
 import { EmailOptions } from 'src/type';
 import { EventsGateway } from 'src/utils/events/events.gateway';
@@ -28,7 +28,7 @@ import {
 export class pUserService {
   constructor(
     @InjectModel(pUser.name) private pUserModel: Model<pUser>,
-    @InjectModel(User.name) private userModel: Model<User>,
+    @InjectModel(Child.name) private userModel: Model<Child>,
     
     private jwtService: JwtService,
     private emailService: EmailService,

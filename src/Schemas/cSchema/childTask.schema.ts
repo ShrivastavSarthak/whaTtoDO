@@ -2,17 +2,17 @@ import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
 import mongoose from 'mongoose';
 
 @Schema()
-export class Task {
+export class ChildTask {
   @Prop({ required: true })
   taskName: string;
 
   @Prop({ required: true })
   taskDetails: string;
 
-  @Prop({ required: true, type: mongoose.Schema.Types.ObjectId, ref: 'User' })
+  @Prop({ required: true, type: mongoose.Schema.Types.ObjectId, ref: 'Child' })
   created_by: mongoose.Schema.Types.ObjectId;
 
-  @Prop({ required: true, type: mongoose.Schema.Types.ObjectId, ref: 'User' })
+  @Prop({ required: true, type: mongoose.Schema.Types.ObjectId, ref: 'Child' })
   updated_by: mongoose.Schema.Types.ObjectId;
 
   @Prop({ required: true, default: false })
@@ -40,4 +40,4 @@ export class Task {
   updated_at: Date;
 }
 
-export const TaskSchema = SchemaFactory.createForClass(Task);
+export const ChildTaskSchema = SchemaFactory.createForClass(ChildTask);

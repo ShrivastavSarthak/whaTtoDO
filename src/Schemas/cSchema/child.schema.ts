@@ -1,8 +1,9 @@
 import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
 import { IsArray } from 'class-validator';
+import mongoose from 'mongoose';
 
 @Schema()
-export class User {
+export class Child {
   @Prop({ unique: true, required: true })
   username: string;
 
@@ -26,6 +27,9 @@ export class User {
 
   @Prop({ default: false })
   isVerified: boolean;
+
+  @Prop({ type: mongoose.Types.ObjectId, ref: 'Home', default: null })
+  homeId: string;
 
   @Prop({
     type: [String],
@@ -53,4 +57,4 @@ export class User {
   updated_at: Date;
 }
 
-export const UserSchema = SchemaFactory.createForClass(User);
+export const UserSchema = SchemaFactory.createForClass(Child);

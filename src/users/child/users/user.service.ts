@@ -4,11 +4,11 @@ import {
   UnauthorizedException,
 } from '@nestjs/common';
 import { JwtService } from '@nestjs/jwt';
-import { InjectModel } from '@nestjs/mongoose';
+import { InjectConnection, InjectModel } from '@nestjs/mongoose';
 import bcrypt from 'bcryptjs';
-import { Model } from 'mongoose';
+import { Connection, Model } from 'mongoose';
 import { UserRoleEnum } from 'src/lib/enums/common.enums';
-import { User } from 'src/Schemas/cSchema/user.schema';
+import { Child } from 'src/Schemas/cSchema/child.schema';
 import { Home } from 'src/Schemas/homeSchema/homeSchema';
 import { Invite } from 'src/Schemas/inviteSchema/inviteSchema';
 import { ChildSignupInterface } from 'src/shared/interface/user-interface';
@@ -24,9 +24,10 @@ import {
 @Injectable()
 export class UserService {
   constructor(
-    @InjectModel(User.name) private userModel: Model<User>,
+    @InjectModel(Child.name) private userModel: Model<Child>,
     @InjectModel(Home.name) private homeModel: Model<Home>,
     @InjectModel(Invite.name) private InviteModel: Model<Invite>,
+    @InjectConnection() private connection: Connection,
     private jwtService: JwtService,
     private emailService: EmailService,
     private eventGateway: EventsGateway,
@@ -205,17 +206,40 @@ export class UserService {
       throw new BadRequestException('Invalid invite token or email');
     }
 
-    const findHomeAndAddChild = await this.homeModel.findByIdAndUpdate(
-      findInvite.homeId,
-      {
-        $push: {
-          members: findUser._id,
-        },
-      },
-      { new: true },
-    );
-    if (!findHomeAndAddChild) {
-      throw new BadRequestException('Home not found');
+    const session = await this.connection.startSession();
+
+    try {
+      session.startTransaction({
+        readConcern: { level: 'snapshot' },
+        writeConcern: { w: 'majority' },
+      });
+      const findHomeAndAddChild = await this.homeModel
+        .findByIdAndUpdate(
+          findInvite.homeId,
+          {
+            $push: {
+              members: findUser._id,
+            },
+          },
+          { new: true },
+        )
+        .session(session);
+
+      if (!findHomeAndAddChild) {
+        throw new BadRequestException('Home not found');
+      }
+
+      await this.userModel
+        .findByIdAndUpdate(findUser._id, {
+          homeId: findInvite.homeId,
+          updated_at: new Date(),
+        })
+        .session(session);
+
+      await session.commitTransaction();
+    } catch (error) {
+      await session.abortTransaction();
+      throw new BadRequestException('Error while accepting invite');
     }
 
     await findInvite.updateOne(

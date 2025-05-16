@@ -1,21 +1,21 @@
 import { Injectable } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
 import { Model } from 'mongoose';
-import { User } from 'src/Schemas/cSchema/user.schema';
+import { Child } from 'src/Schemas/cSchema/child.schema';
 import { pUser } from 'src/Schemas/pSchema/pUser.schema';
 import {
   DeleteTaskByIdDto,
   FetchByIdDto,
   RemoveParentChildRelationDto,
 } from './dto/Atask.dto';
-import { Task } from 'src/Schemas/cSchema/task.schema';
+import { ChildTask } from 'src/Schemas/cSchema/childTask.schema';
 
 @Injectable()
 export class AdminTaskService {
   constructor(
     @InjectModel(pUser.name) private patentUserModel: Model<pUser>,
-    @InjectModel(User.name) private childUserModel: Model<User>,
-    @InjectModel(Task.name) private TaskModel: Model<Task>,
+    @InjectModel(Child.name) private childUserModel: Model<Child>,
+    @InjectModel(ChildTask.name) private TaskModel: Model<ChildTask>,
   ) {}
 
   async getAllParent({

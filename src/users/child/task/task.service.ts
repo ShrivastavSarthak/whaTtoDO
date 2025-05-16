@@ -1,8 +1,8 @@
 import { Injectable } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
 import { Model } from 'mongoose';
-import { Task } from 'src/Schemas/cSchema/task.schema';
-import { User } from 'src/Schemas/cSchema/user.schema';
+import { ChildTask } from 'src/Schemas/cSchema/childTask.schema';
+import { Child } from 'src/Schemas/cSchema/child.schema';
 import { pUser } from 'src/Schemas/pSchema/pUser.schema';
 import { CreateTaskDto, DeleteTaskDto } from './dtos/Task.dto';
 import { GetOptions } from 'src/shared/interface/global-interface';
@@ -10,8 +10,8 @@ import { GetOptions } from 'src/shared/interface/global-interface';
 @Injectable()
 export class TaskService {
   constructor(
-    @InjectModel(Task.name) private taskModel: Model<Task>,
-    @InjectModel(User.name) private userModel: Model<User>,
+    @InjectModel(ChildTask.name) private taskModel: Model<ChildTask>,
+    @InjectModel(Child.name) private userModel: Model<Child>,
     @InjectModel(pUser.name) private parentModel: Model<pUser>,
   ) {}
 
