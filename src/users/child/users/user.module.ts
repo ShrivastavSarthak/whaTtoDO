@@ -1,7 +1,7 @@
 import { Module } from '@nestjs/common';
 import { JwtModule } from '@nestjs/jwt';
 import { MongooseModule } from '@nestjs/mongoose';
-import { User, UserSchema } from 'src/Schemas/cSchema/user.schema';
+import { Child, UserSchema } from 'src/Schemas/cSchema/child.schema';
 import { EmailService } from 'src/utils/services/email';
 import { UserController } from './user.controller';
 import { UserService } from './user.service';
@@ -13,7 +13,7 @@ import { Home, HomeSchema } from 'src/Schemas/homeSchema/homeSchema';
   imports: [
     MongooseModule.forFeature([
       {
-        name: User.name,
+        name: Child.name,
         schema: UserSchema,
       },
       {

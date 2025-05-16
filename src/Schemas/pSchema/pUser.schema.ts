@@ -33,7 +33,7 @@ export class pUser {
     type: string;
     enum: occupation;
   };
-  @Prop({ type: mongoose.Schema.Types.ObjectId, ref: 'User' })
+  @Prop({ type: mongoose.Schema.Types.ObjectId, ref: 'Child' })
   children: [];
 
   @Prop()

@@ -1,17 +1,17 @@
 import { Module } from '@nestjs/common';
 import { JwtModule } from '@nestjs/jwt';
 import { MongooseModule } from '@nestjs/mongoose';
-import { User, UserSchema } from 'src/Schemas/cSchema/user.schema';
+import { Child, UserSchema } from 'src/Schemas/cSchema/child.schema';
 import { pUser, pUserSchema } from 'src/Schemas/pSchema/pUser.schema';
 import { adminTaskController } from './Atask.controller';
 import { AdminTaskService } from './Atask.service';
-import { Task, TaskSchema } from 'src/Schemas/cSchema/task.schema';
+import { ChildTask, ChildTaskSchema } from 'src/Schemas/cSchema/childTask.schema';
 
 @Module({
   imports: [
     MongooseModule.forFeature([
       {
-        name: User.name,
+        name: Child.name,
         schema: UserSchema,
       },
       {
@@ -19,8 +19,8 @@ import { Task, TaskSchema } from 'src/Schemas/cSchema/task.schema';
         schema: pUserSchema,
       },
       {
-        name: Task.name,
-        schema: TaskSchema,
+        name: ChildTask.name,
+        schema: ChildTaskSchema,
       },
     ]),
     JwtModule.register({

@@ -9,7 +9,7 @@ import { MailerModule } from '@nestjs-modules/mailer';
 import { ConfigService } from '@nestjs/config';
 import { EmailService } from 'src/utils/services/email';
 import { EventsGateway } from 'src/utils/events/events.gateway';
-import { User, UserSchema } from 'src/Schemas/cSchema/user.schema';
+import { Child, UserSchema } from 'src/Schemas/cSchema/child.schema';
 
 @Module({
   imports: [
@@ -23,7 +23,7 @@ import { User, UserSchema } from 'src/Schemas/cSchema/user.schema';
         schema: pUserSchema,
       },
       {
-        name: User.name,
+        name: Child.name,
         schema: UserSchema,
       },
     ]),

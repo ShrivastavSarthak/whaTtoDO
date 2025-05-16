@@ -4,7 +4,7 @@ import { MongooseModule } from '@nestjs/mongoose';
 import { pUser, pUserSchema } from 'src/Schemas/pSchema/pUser.schema';
 import { pUserService } from './puser.service';
 import { pUserController } from './puser.controller';
-import { User, UserSchema } from 'src/Schemas/cSchema/user.schema';
+import { Child, UserSchema } from 'src/Schemas/cSchema/child.schema';
 import { MailerModule } from '@nestjs-modules/mailer';
 import { EmailService } from 'src/utils/services/email';
 import { EventsGateway } from 'src/utils/events/events.gateway';
@@ -20,7 +20,7 @@ import { Home, HomeSchema } from 'src/Schemas/homeSchema/homeSchema';
         schema: pUserSchema,
       },
       {
-        name: User.name,
+        name: Child.name,
         schema: UserSchema,
       },
       {

@@ -12,14 +12,14 @@ export class Home {
   @Prop({ required: true })
   homeDesc: string;
 
-  @Prop()
+  @Prop({ type: String, default: null })
   homePhoto: string;
 
   @Prop({ type: mongoose.Schema.Types.ObjectId, ref: 'pUser', default: null })
   coLeader: string;
 
-  @Prop({ type: mongoose.Schema.Types.ObjectId, ref: 'User', default: [] })
-  members: [];
+  @Prop({ type: [mongoose.Schema.Types.ObjectId], ref: 'Child', default: [] })
+  members: mongoose.Schema.Types.ObjectId[];
 
   @Prop({ default: new Date() })
   created_at: Date;

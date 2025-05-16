@@ -2,8 +2,8 @@ import { Module } from '@nestjs/common';
 import { MongooseModule } from '@nestjs/mongoose';
 import { TaskService } from './task.service';
 import { TaskController } from './task.controller';
-import { User, UserSchema } from 'src/Schemas/cSchema/user.schema';
-import { Task, TaskSchema } from 'src/Schemas/cSchema/task.schema';
+import { Child, UserSchema } from 'src/Schemas/cSchema/child.schema';
+import { ChildTask, ChildTaskSchema } from 'src/Schemas/cSchema/childTask.schema';
 import { pUser, pUserSchema } from 'src/Schemas/pSchema/pUser.schema';
 // import { pUser, pUserSchema } from 'src/Schemas/pSchema/pUser.schema';
 
@@ -11,11 +11,11 @@ import { pUser, pUserSchema } from 'src/Schemas/pSchema/pUser.schema';
   imports: [
     MongooseModule.forFeature([
       {
-        name: Task.name,
-        schema: TaskSchema,
+        name: ChildTask.name,
+        schema: ChildTaskSchema,
       },
       {
-        name: User.name,
+        name: Child.name,
         schema: UserSchema,
       },
       {

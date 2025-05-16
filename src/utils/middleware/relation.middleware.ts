@@ -2,13 +2,13 @@ import { Injectable, NestMiddleware } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
 import { NextFunction, Request, Response } from 'express';
 import { Model } from 'mongoose';
-import { User } from 'src/Schemas/cSchema/user.schema';
+import { Child } from 'src/Schemas/cSchema/child.schema';
 import { pUser } from 'src/Schemas/pSchema/pUser.schema';
 
 @Injectable()
 export class CheckRelation implements NestMiddleware {
   constructor(
-    @InjectModel(User.name) private childModel: Model<User>,
+    @InjectModel(Child.name) private childModel: Model<Child>,
     @InjectModel(pUser.name) private parentModel: Model<pUser>,
   ) {}
 

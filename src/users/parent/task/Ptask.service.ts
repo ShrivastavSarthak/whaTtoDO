@@ -5,7 +5,7 @@ import {
 } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
 import { Model } from 'mongoose';
-import { Task } from 'src/Schemas/cSchema/task.schema';
+import { ChildTask } from 'src/Schemas/cSchema/childTask.schema';
 // import { User } from 'src/Schemas/cSchema/user.schema';
 // import { pUser } from 'src/Schemas/pSchema/pUser.schema';
 import { JwtService } from '@nestjs/jwt';
@@ -30,7 +30,7 @@ import {
 @Injectable()
 export class pTaskUserService {
   constructor(
-    @InjectModel(Task.name) private taskModel: Model<Task>,
+    @InjectModel(ChildTask.name) private taskModel: Model<ChildTask>,
     @InjectModel(pUser.name) private pUserModel: Model<pUser>,
     @InjectModel(Invite.name) private InviteSchema: Model<Invite>,
     @InjectModel(Home.name) private homeModel: Model<Home>,

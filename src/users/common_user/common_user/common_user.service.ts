@@ -2,14 +2,14 @@ import { InjectModel } from '@nestjs/mongoose';
 import { VerifyUser } from '../dto/common.user.dto';
 import { Model } from 'mongoose';
 import { pUser } from 'src/Schemas/pSchema/pUser.schema';
-import { User } from 'src/Schemas/cSchema/user.schema';
+import { Child } from 'src/Schemas/cSchema/child.schema';
 import { UnauthorizedException } from '@nestjs/common';
 import { EventsGateway } from 'src/utils/events/events.gateway';
 
 export class CommonUserService {
   constructor(
     @InjectModel(pUser.name) private pUserModel: Model<pUser>,
-    @InjectModel(User.name) private userModel: Model<User>,
+    @InjectModel(Child.name) private userModel: Model<Child>,
     private eventGateway: EventsGateway,
   ) {}
   async verifyUser(verifyUser: VerifyUser) {
