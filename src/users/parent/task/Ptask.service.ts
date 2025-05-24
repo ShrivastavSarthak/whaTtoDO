@@ -147,12 +147,12 @@ export class pTaskUserService {
 
   async getAllRequest(homeId: string) {
     try {
-      const findAllTask = await this.inviteModel.find(
+      const findAllInvites = await this.inviteModel.find(
         { homeId: homeId },
         { token: 0 },
       );
 
-      if (!findAllTask) {
+      if (!findAllInvites) {
         return {
           message: 'Task not found',
           status: '404',
@@ -161,7 +161,7 @@ export class pTaskUserService {
       return {
         message: 'Task fetched successfully',
         status: '200',
-        findAllTask,
+        invites: findAllInvites,
       };
     } catch (error) {
       throw new Error(error);
@@ -431,5 +431,4 @@ export class pTaskUserService {
       status: 200,
     };
   }
-
 }
