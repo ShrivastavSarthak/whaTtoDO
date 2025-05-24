@@ -29,10 +29,10 @@ async function bootstrap() {
       'http://localhost:3000',
       'https://task-nest.vercel.app/',
     ],
-    methods: 'GET,HEAD,PUT,PATCH,POST,DELETE',
+    methods: ['GET','HEAD','PUT','PATCH','POST','DELETE'],
     allowedHeaders: '*',
     credentials: true,
-    
+
   });
   await app.listen(process.env.PORT);
 }
