@@ -24,7 +24,11 @@ async function bootstrap() {
   const document = SwaggerModule.createDocument(app, options);
   SwaggerModule.setup(`${apiPath}`, app, document);
   app.enableCors({
-    origin: '*',
+    origin: [
+      'https://task-nest-psi.vercel.app',
+      'http://localhost:3000',
+      'https://task-nest.vercel.app',
+    ],
     methods: ['GET', 'HEAD', 'PUT', 'PATCH', 'POST', 'DELETE'],
     allowedHeaders: '*',
     credentials: true,
