@@ -3,7 +3,6 @@ import {
   Injectable,
   UnauthorizedException
 } from '@nestjs/common';
-import { ConfigService } from '@nestjs/config';
 import { JwtService } from '@nestjs/jwt';
 import { InjectModel } from '@nestjs/mongoose';
 import bcrypt from 'bcryptjs';
@@ -14,7 +13,6 @@ import {
 import { Child } from 'src/Schemas/cSchema/child.schema';
 import { pUser } from 'src/Schemas/pSchema/pUser.schema';
 import { EmailOptions } from 'src/type';
-import { EventsGateway } from 'src/utils/events/events.gateway';
 import { EmailService } from 'src/utils/services/email';
 import { ParentSignupFieldValidators } from 'src/utils/validators/fieldValidators';
 import {
@@ -32,8 +30,6 @@ export class pUserService {
     
     private jwtService: JwtService,
     private emailService: EmailService,
-    private eventGateway: EventsGateway,
-    private configService: ConfigService,
   ) {}
 
   async signupParent(createParentDto: CreatePatentDto) {

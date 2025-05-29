@@ -1,3 +1,4 @@
+import mongoose from "mongoose";
 
 
 export interface ChildSignupInterface {
@@ -16,4 +17,16 @@ export interface ParentSignupInterface {
     password: string;
     gender: string;
     occupation: string;
+}
+
+export interface MemberInvitedInterface {
+  _id: mongoose.Types.ObjectId;
+  homeId: string;
+  email: string;
+  roleAssigned: string;
+  status: string;
+  token?: string;
+  createdAt?: Date;
+  updatedAt?: Date;
+  
 }

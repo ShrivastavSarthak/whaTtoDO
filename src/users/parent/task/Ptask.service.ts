@@ -26,6 +26,7 @@ import {
   ReadParentTaskDto,
   UpdateParentTaskDto,
 } from './dtos/Ptask.dto';
+import { MemberInvitedInterface } from 'src/shared/interface/user-interface';
 
 @Injectable()
 export class pTaskUserService {
@@ -211,13 +212,14 @@ export class pTaskUserService {
         }
       }
 
-      const createInvite = await this.InviteSchema.create({
-        homeId: parentInvite.homeId,
-        email: parentInvite.email,
-        token: inviteToken,
-        roleAssigned: UserRoleHierarchyEnum.CO_LEADER,
-        status: 'pending',
-      });
+      const createInvite: MemberInvitedInterface =
+        await this.InviteSchema.create({
+          homeId: parentInvite.homeId,
+          email: parentInvite.email,
+          token: inviteToken,
+          roleAssigned: UserRoleHierarchyEnum.CO_LEADER,
+          status: 'pending',
+        });
 
       if (createInvite) {
         const mailOptions: EmailOptions = {
@@ -228,6 +230,15 @@ export class pTaskUserService {
         await this.emailService.sendMail(mailOptions);
         return {
           message: 'Mail send successfully',
+          invite: {
+            _id: createInvite._id,
+            homeId: createInvite.homeId,
+            email: createInvite.email,
+            roleAssigned: createInvite.roleAssigned,
+            status: createInvite.status,
+            created_at: createInvite.createdAt,
+            updated_at: createInvite.updatedAt,
+          },
           status: 200,
         };
       }
@@ -251,6 +262,8 @@ export class pTaskUserService {
       throw new BadRequestException('Home not found');
     }
 
+    const members = [];
+    // NEED TO IMPROVE THIS FUNCTIONALITY
     const inviteResults = await Promise.allSettled(
       emails.map(async (email: string) => {
         const inviteToken = this.jwtService.sign(
@@ -281,16 +294,26 @@ export class pTaskUserService {
             };
           }
         }
-        const isInviteCreated = await this.InviteSchema.create({
-          homeId: homeId,
-          email: email,
-          roleAssigned: UserRoleHierarchyEnum.MEMBER,
-          status: 'pending',
-          token: inviteToken,
-        });
-        console.log(isInviteCreated, 'isInviteCreated');
+        const isInviteCreated: MemberInvitedInterface =
+          await this.InviteSchema.create({
+            homeId: homeId,
+            email: email,
+            roleAssigned: UserRoleHierarchyEnum.MEMBER,
+            status: 'pending',
+            token: inviteToken,
+          });
 
         if (isInviteCreated) {
+          // IMPROVE THIS FUNCTIONALITY IF YOU CAN
+          members.push({
+            _id: isInviteCreated._id,
+            homeId: isInviteCreated.homeId,
+            roleAssigned: isInviteCreated.roleAssigned,
+            email: isInviteCreated.email,
+            status: isInviteCreated.status,
+            created_at: isInviteCreated?.createdAt,
+            updated_at: isInviteCreated?.updatedAt,
+          });
           const mailOptions: EmailOptions = {
             to: email,
             subject: 'Connect with your homies!!',
@@ -311,6 +334,7 @@ export class pTaskUserService {
 
     return {
       message: 'Invite created successfully',
+      invite: members,
       status: 201,
     };
   }
