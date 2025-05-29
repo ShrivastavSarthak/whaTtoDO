@@ -5,7 +5,7 @@ import {
   WebSocketGateway,
   WebSocketServer,
 } from '@nestjs/websockets';
-import { Server, Socket } from 'socket.io';
+import { Server } from 'socket.io';
 
 @WebSocketGateway({ cors: true })
 export class EventsGateway
@@ -13,21 +13,19 @@ export class EventsGateway
 {
   @WebSocketServer() server: Server;
 
-  afterInit(server: Server) {
-    console.log('Server Init', server);
+  afterInit() {
+    this.server.emit('Server Init');
   }
 
-  handleConnection(client: Socket) {
-    console.log('Client connected', client);
+  handleConnection() {
+    this.server.emit('client connected');
   }
 
-  handleDisconnect(client: Socket) {
-    console.log('Client disconnected', client);
+  handleDisconnect() {
+    this.server.emit('client disconnected');
   }
 
   notifyVerificationUpdate(userId: string) {
-    console.log("done");
-    
     this.server.emit(`emailVerified:${userId}`, {
       message: 'Email verification successfully!',
     });

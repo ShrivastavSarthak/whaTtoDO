@@ -13,7 +13,6 @@ import { Home } from 'src/Schemas/homeSchema/homeSchema';
 import { Invite } from 'src/Schemas/inviteSchema/inviteSchema';
 import { ChildSignupInterface } from 'src/shared/interface/user-interface';
 import { EmailOptions } from 'src/type';
-import { EventsGateway } from 'src/utils/events/events.gateway';
 import { EmailService } from 'src/utils/services/email';
 import { ChildSignupFieldValidators } from 'src/utils/validators/fieldValidators';
 import {
@@ -30,7 +29,6 @@ export class UserService {
     @InjectConnection() private connection: Connection,
     private jwtService: JwtService,
     private emailService: EmailService,
-    private eventGateway: EventsGateway,
   ) {}
 
   async signupUser(createUserDto: CreateUsrDto) {
