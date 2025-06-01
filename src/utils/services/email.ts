@@ -7,13 +7,14 @@ export class EmailService {
   constructor(private readonly mailerService: MailerService) {}
   async sendMail(emailOptions: EmailOptions) {
     try {
-      
       await this.mailerService.sendMail({
         from: `Email verification <sharthakshrivastav20112002@gmail.com>`,
         to: emailOptions.to,
         subject: emailOptions.subject,
         text: emailOptions.body,
       });
-    } catch (error) {}
+    } catch (error) {
+      throw new Error('Failed to send email');
+    }
   }
 }
