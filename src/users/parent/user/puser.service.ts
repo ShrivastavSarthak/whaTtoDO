@@ -245,7 +245,6 @@ export class pUserService {
           body: `Hey!! click on the this link to verify your account: ${verificationLink}`,
         };
         this.emailService.sendMail(mailOptions);
-        await this.emailService.sendMail(mailOptions);
 
         return {
           message: 'Mail send successfully',
